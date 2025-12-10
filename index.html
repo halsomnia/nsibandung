@@ -10,8 +10,8 @@
     <style>
         /* ==================== 1. CSS STYLING UMUM (MINIMALIS & MODERN) ==================== */
         :root {
-            --primary-color: #009688; /* Teal - Modern, Clean */
-            --secondary-color: #607d8b; /* Blue Grey - Untuk Total/Grup Header */
+            --primary-color: #333333; /* Teal - Modern, Clean */
+            --secondary-color: #333333; /* Blue Grey - Untuk Total/Grup Header */
             --accent-color: #FFFF00; /* Orange - Untuk Highlight Nilai Total */
             --bg-light: #f4f7f6;      /* Background umum (abu-abu sangat terang) */
             --bg-card: #ffffff;       /* Background kontainer utama (putih murni) */
@@ -132,14 +132,14 @@
             padding: 8px 16px; 
             font-size: 12px; 
             border-radius: 6px;
-            background-color: var(--primary-color);
+            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
             transition: background-color 0.2s, box-shadow 0.2s;
         }
         #download-btn:hover:not(:disabled) {
-            background-color: #00796b;
+            background-color: #007bff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         #download-btn:disabled {
@@ -184,7 +184,7 @@
             font-weight: 600;
             padding: 8px 3px; 
             border: none; 
-            border-bottom: 1px solid #005f56; 
+            border-bottom: 1px solid #444444; 
         }
 
         th, td {
@@ -238,27 +238,27 @@
         }
         
         /* ==================== 2. WARNA BERDASARKAN PRODUK (Soft Tones) ==================== */
-        .KEM-TONE-EXT-row { background-color: #f0f8ff; } 
-        .KEM-TONE-INT-row { background-color: #fffaf0; } 
-        .ULTRASHIELD-row { background-color: #f0fff0; } 
-        .SPECTRUM-row { background-color: #f8f0ff; } 
-        .COLORTONE-EXT-row { background-color: #fff5ee; } 
-        .COLORTONE-INT-row { background-color: #f0f8ff; } 
-        .SPECTRUM-SWOB-row { background-color: #fff0f5; } 
-        .SPECTRUM-ECO-row { background-color: #fcfcfc; } 
-        .AEROSOL-row { background-color: #fffff0; } 
-        .COLORANT-row { background-color: #f5fff5; } 
-        .ABC-row { background-color: #f0f5ff; } 
+        .KEM-TONE-EXT-row { background-color: #f9f9f9; } 
+        .KEM-TONE-INT-row { background-color: #f9f9f9; } 
+        .ULTRASHIELD-row { background-color: #f9f9f9; } 
+        .SPECTRUM-row { background-color: #f9f9f9; } 
+        .COLORTONE-EXT-row { background-color: #f9f9f9; } 
+        .COLORTONE-INT-row { background-color: #f9f9f9; } 
+        .SPECTRUM-SWOB-row { background-color: #f9f9f9; } 
+        .SPECTRUM-ECO-row { background-color: #f9f9f9; } 
+        .AEROSOL-row { background-color: #f9f9f9; } 
+        .COLORANT-row { background-color: #f9f9f9; } 
+        .ABC-row { background-color: #f9f9f9; } 
         /* ABC-ZINCHROMATE dihapus */
-        .TAMITEX-CT-row { background-color: #fff8f0; } 
-        .TAMITEX-WF-row { background-color: #fff0f0; } 
-        .TAMITEX-CG-row { background-color: #fff5f0; } 
-        .VINOTEX-CT-row { background-color: #f0ffff; } 
-        .VINOTEX-WF-row { background-color: #f0f8ff; } 
-        .APOLLO-row { background-color: #f0fff0; } 
+        .TAMITEX-CT-row { background-color: #f9f9f9; } 
+        .TAMITEX-WF-row { background-color: #f9f9f9; } 
+        .TAMITEX-CG-row { background-color: #f9f9f9; } 
+        .VINOTEX-CT-row { background-color: #f9f9f9; } 
+        .VINOTEX-WF-row { background-color: #f9f9f9; } 
+        .APOLLO-row { background-color: #f9f9f9; } 
         /* SANLUX-ZINCHROMATE dihapus */
-        .SPECTRUM-GRANITE-row { background-color: #f0f0e0; } 
-        .SPECTRUM-FLOORKOTE-row { background-color: #f5f0f0; } 
+        .SPECTRUM-GRANITE-row { background-color: #f9f9f9; } 
+        .SPECTRUM-FLOORKOTE-row { background-color: #f9f9f9; } 
 
     </style>
 </head>
@@ -270,7 +270,7 @@
     <div class="header-info">
         <div class="info-row">
             <label for="nama-toko">Toko:</label>
-            <input type="text" id="nama-toko" placeholder="Nama Toko">
+            <input type="text" id="nama-toko" placeholder="Nama dan Alamat Toko">
         </div>
         <div class="info-row">
             <label for="salesman">Salesman:</label>
@@ -297,7 +297,7 @@
                 <tr>
                     <th rowspan="2" class="text-left">PRODUK</th>
                     <th rowspan="2">DISC (%)</th>
-                    <th colspan="3" class="header-group">ORDER QTY</th>
+                    <th colspan="3" class="header-group">ORDER (QTY)</th>
                     <th rowspan="2">TOTAL (RP)</th>
                 </tr>
                 <tr>
