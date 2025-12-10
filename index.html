@@ -3,47 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SALES ORDER V3</title> 
+    <title>SALES ORDER</title> 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* ==================== 1. CSS STYLING UMUM (UI Rapi dan Mobile Optimized) ==================== */
+        /* ==================== 1. CSS STYLING UMUM (MINIMALIS & MODERN) ==================== */
+        :root {
+            --primary-color: #009688; /* Teal - Modern, Clean */
+            --secondary-color: #607d8b; /* Blue Grey - Untuk Total/Grup Header */
+            --accent-color: #FFFF00; /* Orange - Untuk Highlight Nilai Total */
+            --bg-light: #f4f7f6;      /* Background umum (abu-abu sangat terang) */
+            --bg-card: #ffffff;       /* Background kontainer utama (putih murni) */
+            --text-dark: #212121;     /* Warna teks utama */
+            --shadow-subtle: 0 4px 10px rgba(0, 0, 0, 0.08); 
+            --header-bg: var(--primary-color);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
             display: flex;
             justify-content: center;
-            padding: 8px; 
+            padding: 10px; 
             margin: 0;
             font-size: 12px; 
             -webkit-text-size-adjust: 100%; 
+            color: var(--text-dark);
         }
 
         .sales-order-container {
             width: 100%;
             max-width: 900px; 
-            background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
-            border-radius: 10px;
+            background: var(--bg-card);
+            box-shadow: var(--shadow-subtle); 
+            border-radius: 12px; 
             overflow: hidden; 
         }
 
-        /* --- HEADER UTAMA (HITAM) --- */
+        /* --- HEADER UTAMA --- */
         h2 {
             text-align: center;
-            padding: 12px 0;
-            background-color: #000; 
+            padding: 15px 0; 
+            background-color: var(--header-bg); 
             color: white;
             margin: 0;
-            font-size: 18px;
+            font-size: 18px; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* --- HEADER INFO STYLING --- */
+        /* --- HEADER INFO STYLING (FORM) --- */
         .header-info {
-            padding: 10px;
-            background-color: #ecf0f1; 
-            border-bottom: 1px solid #bdc3c7;
+            padding: 12px; 
+            background-color: var(--bg-card); 
+            border-bottom: 1px solid #e0e0e0; /* Border sangat halus */
             display: flex; 
             flex-wrap: wrap; 
             gap: 10px; 
@@ -52,236 +66,238 @@
         .info-row {
             display: flex;
             align-items: center;
-            flex: 1 1 48%; 
-            font-size: 11px;
+            flex: 1 1 100%; 
+            font-size: 12px;
+        }
+        @media (min-width: 500px) {
+             .info-row {
+                flex: 1 1 45%; 
+            }
         }
 
         .info-row label {
-            font-weight: bold;
-            min-width: 55px; 
-            color: #34495e;
+            font-weight: 600;
+            min-width: 70px; 
+            color: var(--text-dark);
             white-space: nowrap; 
         }
 
         .info-row input[type="text"] {
             flex-grow: 1; 
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 11px; 
+            padding: 8px 10px; 
+            border: 1px solid #e0e0e0;
+            border-radius: 6px; 
+            font-size: 12px; 
+            transition: border-color 0.2s;
+        }
+        .info-row input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
-        /* --- STYLING GRAND TOTAL BAR (HITAM) --- */
+        /* --- STYLING GRAND TOTAL BAR --- */
         .grand-total-top {
+            padding: 12px 15px; 
+            background-color: var(--secondary-color); 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background-color: #000; 
             color: white;
-            font-weight: bold;
-            border-bottom: 3px solid #333;
         }
 
         .grand-total-label {
-            font-size: 14px;
+            font-size: 14px; 
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
         .grand-total-value {
-            color: #f1c40f; 
-            font-size: 18px;
-            text-align: right;
+            color: var(--accent-color); 
+            font-size: 22px; 
+            font-weight: 700;
         }
 
         /* --- FILTER BAR STYLING --- */
         .filter-bar {
-            padding: 8px 10px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ccc;
-            font-size: 11px;
-            text-align: left;
+            padding: 10px 12px; 
+            font-size: 11px; 
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: space-between; 
+            flex-wrap: wrap;
+            gap: 8px; 
         }
         
-        /* --- STYLING TOMBOL DOWNLOAD BARU --- */
         #download-btn {
-            padding: 8px 15px;
-            background-color: #3498db; 
+            padding: 8px 16px; 
+            font-size: 12px; 
+            border-radius: 6px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 11px;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, box-shadow 0.2s;
         }
-        #download-btn:hover {
-            background-color: #2980b9;
+        #download-btn:hover:not(:disabled) {
+            background-color: #00796b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        /* === PERUBAHAN BARU: STYLING TOMBOL NONAKTIF === */
         #download-btn:disabled {
-            background-color: #ccc; /* Abu-abu */
+            background-color: #ced4da; 
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.8;
+            box-shadow: none;
         }
-        /* ============================================== */
 
-        /* --- WRAPPER UNTUK SCROLLING BODY --- */
+        /* --- TABLE STYLING: NO BORDERS & CLEAN --- */
         .table-wrapper {
-            max-height: 80vh; 
+            max-height: 75vh; 
             overflow-y: auto; 
+            border-radius: 0 0 12px 12px; 
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate; 
+            border-spacing: 0; 
             table-layout: fixed; 
             font-size: 11px; 
         }
 
-        /* --- FREEZE PANES / STICKY HEADER --- */
+        /* --- PENGATURAN LEBAR KOLOM (MOBILE OPTIMIZED) --- */
+        thead th:nth-child(1) { width: 30%; } 
+        thead th:nth-child(2) { width: 8%; } 
+        thead tr:nth-child(2) th:nth-child(1) { width: 8%; } 
+        thead tr:nth-child(2) th:nth-child(2) { width: 8%; } 
+        thead tr:nth-child(2) th:nth-child(3) { width: 8%; } 
+        thead th:nth-child(6) { width: 38%; } 
+
         thead {
-            position: sticky; 
-            top: 0; 
-            z-index: 5; 
-        }
-
-        /* --- TABLE HEADER (HITAM) --- */
-        th {
-            background-color: #000; 
+            background-color: var(--primary-color);
             color: white;
-            text-transform: none;
+            position: sticky; 
+            top: 0;
+            z-index: 10;
+        }
+        
+        thead th {
             font-weight: 600;
-            border-color: #555; 
-            font-size: 10px; 
+            padding: 8px 3px; 
+            border: none; 
+            border-bottom: 1px solid #005f56; 
         }
-
-        .header-group {
-            background-color: #000; 
-        }
-
-        /* PENGATURAN LEBAR KOLOM UNTUK MOBILE (Total 100%) */
-        thead th:nth-child(1) { width: 32%; } /* KATEGORI */
-        thead th:nth-child(2) { width: 10%; } /* DISC (%) */
-        thead tr:nth-child(2) th:nth-child(1) { width: 9%; } /* KG */
-        thead tr:nth-child(2) th:nth-child(2) { width: 9%; } /* GLN */
-        thead tr:nth-child(2) th:nth-child(3) { width: 9%; } /* PL */
-        thead th:nth-child(6) { width: 31%; } /* TOTAL (RP) */
 
         th, td {
-            padding: 4px 1px; 
-            border: 1px solid #ddd;
-            text-align: center;
-            vertical-align: middle;
-            height: 30px; 
-            line-height: 1.2; 
+            padding: 6px 3px; 
+            height: auto; 
+            border: none; 
+            border-bottom: 1px solid #eeeeee; 
         }
-
+        
+        .product-row:last-child td {
+            border-bottom: none; 
+        }
+        
         /* Penataan Teks */
         .text-left {
             text-align: left;
-            padding-left: 5px;
-            word-wrap: break-word; 
+            padding-left: 10px; 
         }
         .text-right {
             text-align: right;
-            padding-right: 5px;
+            padding-right: 10px; 
+            font-weight: 500;
         }
 
-        /* Styling untuk Input QTY dan DISC */
+        /* Styling untuk Input QTY dan DISC (Lebih kecil) */
         .order-input, .disc-input {
-            width: 90%; 
+            width: 100%; 
             max-width: 45px; 
-            padding: 3px 1px;
-            text-align: center;
-            border: 1px solid #3498db; 
+            padding: 3px 1px; 
+            font-size: 11px; 
+            height: 24px; 
+            margin: auto; 
+            display: block; 
+            border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 10px;
-            height: 25px;
+            text-align: center;
         }
         
         .disc-input {
-            width: 80%;
             max-width: 40px;
-            border-color: #27ae60; 
         }
-
-
-        /* Styling untuk Group Header */
+        
+        /* Styling untuk Group Header (Pemisah Jelas) */
         .product-group-header td {
-            font-weight: bold;
-            text-align: left;
-            padding: 6px 10px !important;
-            border: none; 
-            border-bottom: 2px solid #bdc3c7;
-            background-color: inherit !important; 
-            color: #333;
+            background-color: var(--secondary-color) !important; 
+            color: white;
+            font-weight: 700;
+            padding: 8px 10px !important; 
+            border-bottom: none !important;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset; 
         }
         
-        /* ==================== 2. WARNA BERDASARKAN PRODUK ==================== */
-        .KEM-TONE-EXT-row, .KEM-TONE-EXT-header { background-color: #e0f7fa; } 
-        .KEM-TONE-INT-row, .KEM-TONE-INT-header { background-color: #fff3e0; } 
-        .ULTRASHIELD-row, .ULTRASHIELD-header { background-color: #e8f5e9; } 
-        .SPECTRUM-row, .SPECTRUM-header { background-color: #f3e5f5; } 
-        .COLORTONE-EXT-row, .COLORTONE-EXT-header { background-color: #fbe9e7; } 
-        .COLORTONE-INT-row, .COLORTONE-INT-header { background-color: #e1f5fe; } 
-        .SPECTRUM-SWOB-row, .SPECTRUM-SWOB-header { background-color: #fce4ec; } 
-        .SPECTRUM-ECO-row, .SPECTRUM-ECO-header { background-color: #efebe9; } 
-        .AEROSOL-row, .AEROSOL-header { background-color: #fffde7; } 
-        .COLORANT-row, .COLORANT-header { background-color: #f9fbe7; } 
-        .ABC-row, .ABC-header { background-color: #eceff1; } 
-        .ABC-ZINCHROMATE-row, .ABC-ZINCHROMATE-header { background-color: #f1f8e9; } 
-        .TAMITEX-CT-row, .TAMITEX-CT-header { background-color: #e6ee9c; } 
-        .TAMITEX-WF-row, .TAMITEX-WF-header { background-color: #ffe082; } 
-        .TAMITEX-CG-row, .TAMITEX-CG-header { background-color: #ffab91; } 
-        .VINOTEX-CT-row, .VINOTEX-CT-header { background-color: #b3e5fc; } 
-        .VINOTEX-WF-row, .VINOTEX-WF-header { background-color: #e1f5fe; } 
-        .APOLLO-row, .APOLLO-header { background-color: #b9f6ca; } 
-        .SANLUX-ZINCHROMATE-row, .SANLUX-ZINCHROMATE-header { background-color: #c5cae9; } 
-        .SPECTRUM-GRANITE-row, .SPECTRUM-GRANITE-header { background-color: #c0ca33; } 
-        .SPECTRUM-FLOORKOTE-row, .SPECTRUM-FLOORKOTE-header { background-color: #a1887f; } 
-        
+        /* ==================== 2. WARNA BERDASARKAN PRODUK (Soft Tones) ==================== */
+        .KEM-TONE-EXT-row { background-color: #f0f8ff; } 
+        .KEM-TONE-INT-row { background-color: #fffaf0; } 
+        .ULTRASHIELD-row { background-color: #f0fff0; } 
+        .SPECTRUM-row { background-color: #f8f0ff; } 
+        .COLORTONE-EXT-row { background-color: #fff5ee; } 
+        .COLORTONE-INT-row { background-color: #f0f8ff; } 
+        .SPECTRUM-SWOB-row { background-color: #fff0f5; } 
+        .SPECTRUM-ECO-row { background-color: #fcfcfc; } 
+        .AEROSOL-row { background-color: #fffff0; } 
+        .COLORANT-row { background-color: #f5fff5; } 
+        .ABC-row { background-color: #f0f5ff; } 
+        /* ABC-ZINCHROMATE dihapus */
+        .TAMITEX-CT-row { background-color: #fff8f0; } 
+        .TAMITEX-WF-row { background-color: #fff0f0; } 
+        .TAMITEX-CG-row { background-color: #fff5f0; } 
+        .VINOTEX-CT-row { background-color: #f0ffff; } 
+        .VINOTEX-WF-row { background-color: #f0f8ff; } 
+        .APOLLO-row { background-color: #f0fff0; } 
+        /* SANLUX-ZINCHROMATE dihapus */
+        .SPECTRUM-GRANITE-row { background-color: #f0f0e0; } 
+        .SPECTRUM-FLOORKOTE-row { background-color: #f5f0f0; } 
+
     </style>
 </head>
 <body>
 
 <div class="sales-order-container" id="sales-order-capture">
-    <h2>SALES ORDER V3</h2> 
+    <h2>SALES ORDER</h2> 
     
     <div class="header-info">
         <div class="info-row">
             <label for="nama-toko">Toko:</label>
-            <input type="text" id="nama-toko" placeholder="">
+            <input type="text" id="nama-toko" placeholder="Nama Toko">
         </div>
         <div class="info-row">
             <label for="salesman">Salesman:</label>
-            <input type="text" id="salesman" placeholder="">
+            <input type="text" id="salesman" placeholder="Nama Salesman">
         </div>
     </div>
 
     <div class="grand-total-top">
-        <div class="grand-total-label">GRAND TOTAL</div>
+        <div class="grand-total-label">Grand Total</div>
         <div id="grand-total-display" class="grand-total-value">0</div>
     </div>
     
     <div class="filter-bar">
-        <input type="checkbox" id="filter-active"> 
-        <label for="filter-active">Tampilkan pesanan</label>
-        <button id="download-btn" disabled>Simpan 📥</button>
+        <label for="filter-active">
+            <input type="checkbox" id="filter-active"> 
+            Tampilkan pesanan yang terisi
+        </label>
+        <button id="download-btn" disabled>Simpan</button>
     </div>
     
     <div class="table-wrapper" id="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2" class="text-left">KATEGORI</th>
+                    <th rowspan="2" class="text-left">PRODUK</th>
                     <th rowspan="2">DISC (%)</th>
-                    <th colspan="3" class="header-group">ORDER (QTY)</th>
+                    <th colspan="3" class="header-group">ORDER QTY</th>
                     <th rowspan="2">TOTAL (RP)</th>
                 </tr>
                 <tr>
@@ -297,7 +313,7 @@
 </div>
 
 <script>
-    // Data Produk LENGKAP & TERKONSOLIDASI 
+    // Data Produk LENGKAP (SANLUX ZINCHROMATE & ABC ZINCHROMATE DIHAPUS)
     const productData = [
         // --- KEM-TONE EXT (Disc 17.5%) ---
         { produk: "KEM-TONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 563000, hargaPl: 2741300, disc: 17.5 },
@@ -359,9 +375,9 @@
 
         // --- SPECTRUM ECO (Disc 15.0%) ---
         { produk: "SPECTRUM ECO", kategori: "ALKALI 18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 700700, disc: 15.0 },
-        { produk: "SPECTRUM ECO", kategori: "ALKALI 3,78 L", hargaKg: 0, hargaGln: 147900, hargaPl: 0, disc: 15.0 },
+        { produk: "SPECTRUM ECO", kategori: "ALKALI 3,78 L", hargaKg: 0, hargaGln: 147900, disc: 15.0 },
         { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX 18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 765000, disc: 15.0 },
-        { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX 3,78 L", hargaKg: 0, hargaGln: 168300, hargaPl: 0, disc: 15.0 },
+        { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX 3,78 L", hargaKg: 0, hargaGln: 168300, disc: 15.0 },
 
         // --- AEROSOL (Disc 10.0%) ---
         { produk: "AEROSOL", kategori: "150 CC", hargaKg: 0, hargaGln: 16000, hargaPl: 0, disc: 10.0 },
@@ -373,7 +389,7 @@
         { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 232000, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "YELLOW OXIDE", hargaKg: 0, hargaGln: 194700, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "BLUE", hargaKg: 0, hargaGln: 156200, hargaPl: 0, disc: 10.0 },
-        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 384100, disc: 10.0 },
+        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 384100, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "VIOLET", hargaKg: 0, hargaGln: 202800, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "RAW UMBER", hargaKg: 0, hargaGln: 103800, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "MAGENTA", hargaKg: 0, hargaGln: 266900, hargaPl: 0, disc: 10.0 },
@@ -384,25 +400,25 @@
 
         // --- ABC (Disc 10.0%) ---
         { produk: "ABC", kategori: "18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 1220900, disc: 10.0 },
-        { produk: "ABC", kategori: "3,78 L", hargaKg: 0, hargaGln: 232300, hargaPl: 0, disc: 10.0 },
-        { produk: "ABC", kategori: "0,8 L", hargaKg: 0, hargaGln: 60100, hargaPl: 0, disc: 10.0 },
-        { produk: "ABC", kategori: "0,4 L", hargaKg: 0, hargaGln: 36000, hargaPl: 0, disc: 10.0 },
-        { produk: "ABC", kategori: "SILVER/COPPER 0,8 L", hargaKg: 0, hargaGln: 78500, hargaPl: 0, disc: 10.0 },
+        { produk: "ABC", kategori: "3,78 L", hargaKg: 0, hargaGln: 232300, disc: 10.0 },
+        { produk: "ABC", kategori: "0,8 L", hargaKg: 0, hargaGln: 60100, disc: 10.0 },
+        { produk: "ABC", kategori: "0,4 L", hargaKg: 0, hargaGln: 36000, disc: 10.0 },
+        { produk: "ABC", kategori: "SILVER/COPPER 0,8 L", hargaKg: 0, hargaGln: 78500, disc: 10.0 },
         { produk: "ABC", kategori: "GOLD 0,8 L", hargaKg: 0, hargaGln: 120000, disc: 10.0 },
         
         // --- TAMITEX CT (Disc 10.0%) ---
         { produk: "TAMITEX CT", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 515900, disc: 10.0 },
-        { produk: "TAMITEX CT", kategori: "5 KG", hargaKg: 0, hargaGln: 112200, hargaPl: 0, disc: 10.0 },
-        { produk: "TAMITEX CT", kategori: "1 KG", hargaKg: 0, hargaGln: 27500, hargaPl: 0, disc: 10.0 },
+        { produk: "TAMITEX CT", kategori: "5 KG", hargaKg: 0, hargaGln: 112200, disc: 10.0 },
+        { produk: "TAMITEX CT", kategori: "1 KG", hargaKg: 0, hargaGln: 27500, disc: 10.0 },
 
         // --- TAMITEX WF (Disc 10.0%) ---
         { produk: "TAMITEX WF", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 304700, disc: 10.0 },
-        { produk: "TAMITEX WF", kategori: "4 KG", hargaKg: 0, hargaGln: 59400, hargaPl: 0, disc: 10.0 },
+        { produk: "TAMITEX WF", kategori: "4 KG", hargaKg: 0, hargaGln: 59400, disc: 10.0 },
         { produk: "TAMITEX WF", kategori: "1 KG", hargaKg: 18700, hargaGln: 0, hargaPl: 0, disc: 10.0 },
 
         // --- TAMITEX CG (Disc 10.0%) ---
         { produk: "TAMITEX CG", kategori: "SPC 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 1269000, disc: 10.0 },
-        { produk: "TAMITEX CG", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 254500, hargaPl: 0, disc: 10.0 },
+        { produk: "TAMITEX CG", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 254500, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "SPC 1 KG", hargaKg: 74800, hargaGln: 0, hargaPl: 0, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "STD 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 983500, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "STD 4 KG", hargaKg: 0, hargaGln: 199500, disc: 10.0 },
@@ -410,24 +426,24 @@
         
         // --- VINOTEX CT (Disc 10.0%) ---
         { produk: "VINOTEX CT", kategori: "STD & VIP 23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 327800, disc: 10.0 },
-        { produk: "VINOTEX CT", kategori: "STD & VIP 5 KG", hargaKg: 0, hargaGln: 78100, hargaPl: 0, disc: 10.0 },
+        { produk: "VINOTEX CT", kategori: "STD & VIP 5 KG", hargaKg: 0, hargaGln: 78100, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "STD & VIP 1 KG", hargaKg: 20900, hargaGln: 0, hargaPl: 0, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "SPC 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 408500, disc: 10.0 },
-        { produk: "VINOTEX CT", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 96400, hargaPl: 0, disc: 10.0 },
+        { produk: "VINOTEX CT", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 96400, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "SPC 1 KG", hargaKg: 26400, hargaGln: 0, hargaPl: 0, disc: 10.0 },
 
 
         // --- VINOTEX WF (Disc 10.0%) ---
         { produk: "VINOTEX WF", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 232100, disc: 10.0 },
         { produk: "VINOTEX WF", kategori: "4 KG", hargaKg: 0, hargaGln: 49500, disc: 10.0 },
-        { produk: "VINOTEX WF", kategori: "1 KG", hargaKg: 16500, hargaGln: 0, disc: 10.0 },
+        { produk: "VINOTEX WF", kategori: "1 KG", hargaKg: 16500, hargaGln: 0, hargaPl: 0, disc: 10.0 },
 
         // --- APOLLO (Disc 10.0%) ---
         { produk: "APOLLO", kategori: "20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 228900, disc: 10.0 },
         { produk: "APOLLO", kategori: "5 KG", hargaKg: 0, hargaGln: 59000, disc: 10.0 },
-
+        
         // --- SPECTRUM GRANITE (Disc 10.0%) ---
-        { produk: "SPECTRUM GRANITE", kategori: "GL", hargaKg: 0, hargaGln: 415000, disc: 10.0 },
+        { produk: "SPECTRUM GRANITE", kategori: "GL", hargaKg: 0, hargaGln: 415000, hargaPl: 0, disc: 10.0 },
         { produk: "SPECTRUM GRANITE", kategori: "PL", hargaKg: 0, hargaGln: 0, hargaPl: 1950000, disc: 10.0 },
 
         // --- SPECTRUM FLOORKOTE (Disc 10.0%) ---
@@ -435,7 +451,7 @@
         { produk: "SPECTRUM FLOORKOTE", kategori: "4 KG", hargaKg: 0, hargaGln: 250000, disc: 10.0 },
     ];
     
-    // ==================== FUNGSI JAVASCRIPT ====================
+    // ==================== FUNGSI JAVASCRIPT (TIDAK ADA PERUBAHAN LOGIKA) ====================
 
     // 1. Fungsi Utility untuk format Rupiah
     function formatRupiah(number) {
@@ -458,7 +474,7 @@
                 const headerClassName = cssClassName + '-header';
                 
                 html += `<tr class="product-group-header ${headerClassName}">`;
-                html += `<td colspan="5" class="group-label text-left" style="padding-left: 10px;">${item.produk}</td>`; 
+                html += `<td colspan="5" class="group-label text-left">${item.produk}</td>`; 
                 html += `<td class="text-right">-</td>`;
                 html += `</tr>`;
             }
@@ -467,12 +483,14 @@
             
             rowHtml += `<td class="text-left">${item.kategori}</td>`; 
             
+            // Input Diskon
             rowHtml += `<td><input type="number" min="0" max="100" value="${item.disc}" class="disc-input" step="0.5"></td>`;
             
             const disabledKg = item.hargaKg > 0 ? '' : 'disabled';
             const disabledGln = item.hargaGln > 0 ? '' : 'disabled';
             const disabledPl = item.hargaPl > 0 ? '' : 'disabled';
 
+            // Input QTY
             rowHtml += `<td><input type="number" min="0" value="" ${disabledKg} class="order-input kg-qty" data-price="${item.hargaKg}"></td>`;
             rowHtml += `<td><input type="number" min="0" value="" ${disabledGln} class="order-input gln-qty" data-price="${item.hargaGln}"></td>`;
             rowHtml += `<td><input type="number" min="0" value="" ${disabledPl} class="order-input pl-qty" data-price="${item.hargaPl}"></td>`;
@@ -500,7 +518,7 @@
             }
             
             if (row.classList.contains('product-group-header')) {
-                row.style.display = '';
+                 row.style.display = '';
             }
         } else {
             row.style.display = ''; 
@@ -548,11 +566,12 @@
         let grandTotal = 0;
         const totalElements = document.querySelectorAll('.total-row');
         const grandTotalDisplay = document.getElementById('grand-total-display');
-        const downloadBtn = document.getElementById('download-btn'); // Ambil tombol
-
+        const downloadBtn = document.getElementById('download-btn'); 
+        
         totalElements.forEach(element => {
             const row = element.closest('.product-row');
-            if (row && row.style.display !== 'none') {
+            
+             if (row.style.display !== 'none') {
                 const total = parseFloat(element.dataset.total) || 0;
                 grandTotal += total;
             }
@@ -560,7 +579,6 @@
 
         grandTotalDisplay.textContent = formatRupiah(grandTotal);
 
-        // LOGIKA BARU: Menonaktifkan tombol jika Grand Total = 0
         if (grandTotal === 0) {
             downloadBtn.disabled = true;
         } else {
@@ -583,13 +601,15 @@
         const filterActive = document.getElementById('filter-active').checked;
         let visibleProductGroups = {}; 
 
+        // Tentukan grup mana yang memiliki produk terlihat
         document.querySelectorAll('.product-row').forEach(row => {
             if (row.style.display !== 'none') {
-                const productClass = row.classList[1].replace('-row', '');
+                const productClass = row.classList[1].replace('-row', ''); 
                 visibleProductGroups[productClass] = true;
             }
         });
         
+        // Sembunyikan atau tampilkan header grup
         document.querySelectorAll('.product-group-header').forEach(headerRow => {
             const productClass = headerRow.classList[1].replace('-header', '');
             if (filterActive && !visibleProductGroups[productClass]) {
@@ -599,13 +619,12 @@
             }
         });
         
-        calculateGrandTotal();
+        calculateGrandTotal(); 
     }
     
     // 7. FUNGSI DOWNLOAD KE GALERI
     async function downloadToGallery() {
         const btn = document.getElementById('download-btn');
-        // Peringatan jika tombol tetap diklik (walaupun sudah disabled)
         if (btn.disabled) {
              alert("Grand Total masih kosong. Mohon isi pesanan terlebih dahulu.");
              return; 
@@ -613,9 +632,9 @@
 
         const container = document.getElementById('sales-order-capture');
         const tableWrapper = document.getElementById('table-wrapper');
-        const namaToko = document.getElementById('nama-toko').value.trim() || "SO";
+        const namaToko = document.getElementById('nama-toko').value.trim() || "SO"; 
         
-        // 1. SIAPKAN TAMPILAN UNTUK CAPTURE
+        // --- 1. SIAPKAN TAMPILAN UNTUK CAPTURE ---
         const originalBtnDisplay = btn.style.display;
         
         const originalWrapperMaxHeight = tableWrapper.style.maxHeight;
@@ -623,53 +642,55 @@
         const filterCheckbox = document.getElementById('filter-active');
         const originalFilterState = filterCheckbox.checked;
 
+        // Sembunyikan tombol download
         btn.style.display = 'none'; 
         
+        // Pastikan seluruh tabel terlihat tanpa scroll
         tableWrapper.style.maxHeight = 'initial';
         tableWrapper.style.overflowY = 'initial';
 
+        // Aktifkan filter agar hanya pesanan terisi yang terekam
         filterCheckbox.checked = true;
         toggleFilter(); 
 
-        await new Promise(resolve => setTimeout(resolve, 50)); 
+        await new Promise(resolve => setTimeout(resolve, 100)); 
 
 
         try {
-            // 2. KONVERSI MENGGUNAKAN HTML2CANVAS
+            // --- 2. KONVERSI MENGGUNAKAN HTML2CANVAS ---
             const canvas = await html2canvas(container, {
-                scale: 2, 
+                scale: 3, 
                 allowTaint: true,
                 useCORS: true,
-                backgroundColor: '#ffffff',
+                backgroundColor: '#ffffff', 
             });
 
-            // 3. PROSES UNDUH FILE
+            // --- 3. PROSES UNDUH FILE ---
             
             const imageURL = canvas.toDataURL('image/png');
             
             const downloadLink = document.createElement('a');
             downloadLink.href = imageURL;
-            downloadLink.download = `SO_${namaToko.replace(/\s/g, '_')}_${new Date().toISOString().slice(0, 10)}.png`;
+            downloadLink.download = `SO_${namaToko.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}_${new Date().toISOString().slice(0, 10)}.png`;
             
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
 
-            // 4. POP UP KONFIRMASI
-            alert("Gambar SO sudah tersimpan di galeri.");
+            // --- 4. POP UP KONFIRMASI ---
+            alert("Gambar Sales Order berhasil tersimpan di galeri (Unduhan).");
 
         } catch (error) {
             console.error("Gagal membuat atau mengunduh gambar SO:", error);
-            alert("Gagal membuat gambar SO. Pastikan koneksi internet stabil.");
+            alert("Gagal membuat gambar SO. Pastikan browser Anda mendukung fungsi ini atau coba lagi.");
         } finally {
-            // 5. KEMBALIKAN TAMPILAN KE KONDISI SEMULA
+            // --- 5. KEMBALIKAN TAMPILAN KE KONDISI SEMULA ---
             filterCheckbox.checked = originalFilterState;
             toggleFilter(); 
 
             btn.style.display = originalBtnDisplay;
             tableWrapper.style.maxHeight = originalWrapperMaxHeight;
             tableWrapper.style.overflowY = originalWrapperOverflow;
-            // Pastikan status disabled dihitung ulang (penting setelah filter dimatikan)
             calculateGrandTotal(); 
         }
     }
@@ -682,8 +703,10 @@
         const filterCheckbox = document.getElementById('filter-active');
         const downloadBtn = document.getElementById('download-btn');
         
+        // Listener untuk Input QTY dan DISC
         [...qtyInputs, ...discInputs].forEach(input => {
             input.addEventListener('input', function() {
+                // Batasan nilai input
                 if (this.classList.contains('disc-input')) {
                     if (parseFloat(this.value) < 0) this.value = 0; 
                     if (parseFloat(this.value) > 100) this.value = 100; 
@@ -693,10 +716,12 @@
                 const row = this.closest('.product-row');
                 calculateRow(row);
             });
+            // Hitung sekali saat awal load
             const row = input.closest('.product-row');
             calculateRow(row);
         });
         
+        // Listener untuk Filter
         if (filterCheckbox) {
             filterCheckbox.addEventListener('change', toggleFilter);
         }
