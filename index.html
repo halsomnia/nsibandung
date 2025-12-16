@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sales</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+	<link rel="icon" type="image/png" href="favicon.png">
+
+    <style>
+        body{
+            margin:0;
+            font-family:'DM Sans', sans-serif;
+            background:#fff;
+            color:#000000;
+        }
+
+        /* HEADER */
+        .header{
+            background:#000;
+            color:#fff;
+            /* UBAH PADDING AGAR HEADER TIDAK TERLALU BESAR SETELAH JUDUL DIPERSINGKAT */
+            padding:40px 30px; 
+        }
+
+        .header h1{
+            margin:0;
+            font-size:2.1em; 
+            font-weight:700;
+        }
+
+        /* SECTIONS (diubah menjadi list item) */
+        .list-section {
+            padding: 0 30px;
+            list-style: none;
+        }
+        
+        /* Container untuk setiap item */
+        .list-item {
+            display: flex; 
+            /* MIDDLE ALIGN (CENTER) untuk item satu baris */
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px 0; 
+            border-bottom: 1px solid #e0e0e0; 
+        }
+        
+        .list-item:first-child {
+            border-top: 1px solid #e0e0e0; 
+        }
+        
+        /* Hapus style untuk title dan desc karena button 3 dihapus */
+        .title, .desc {
+            display: none; 
+        }
+        
+        .list-item-content {
+            flex-grow: 1; 
+            padding-right: 15px; 
+        }
+        
+        /* Link di dalam list item */
+        .list-item a.link {
+            color: #000000;
+            text-decoration: none;
+            font-size: 1.2em; 
+            font-weight: 500;
+            display: block;
+        }
+        
+        /* Tombol panah (Arrow Button) - Ukuran seragam 40x40px */
+        .arrow-btn {
+            background: #e0e0e0; 
+            border-radius: 50%; 
+            width: 40px; 
+            min-width: 40px; 
+            height: 40px;
+            min-height: 40px; 
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            margin-left: 15px;
+            
+            font-size: 1.2em;
+            color: #000000;
+        }
+
+        .arrow-btn:hover {
+            background: #cccccc; 
+        }
+        
+        /* Hide the original .btn */
+        .btn {
+            display: none !important;
+        }
+
+        /* Media Query untuk Mobile */
+        @media(max-width:500px){
+            .header {
+                padding: 30px 20px; /* Kurangi padding header di mobile */
+            }
+            .header h1{
+                font-size:1.9em;
+            }
+            .list-section {
+                padding: 0 20px;
+            }
+            .list-item a.link{
+                font-size:1.1em;
+            }
+            
+            /* Tombol panah di mobile tetap 40px */
+            .arrow-btn {
+                width: 40px;
+                min-width: 40px;
+                height: 40px;
+                min-height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Sales</h1>
+    </div>
+    
+    <ul class="list-section">
+        
+        <li class="list-item">
+            <div class="list-item-content">
+                <a class="link" href="https://drive.google.com/drive/folders/1frRkDfIgu9LLxQvmyr_zmoSeZi-xP78b?usp=sharing" target="_blank">
+                    Brosur dan kartu warna
+                </a>
+            </div>
+            <a href="https://drive.google.com/drive/folders/1frRkDfIgu9LLxQvmyr_zmoSeZi-xP78b?usp=sharing" target="_blank" class="arrow-btn">&#x2794;</a>
+        </li>
+
+        <li class="list-item">
+            <div class="list-item-content">
+                <a class="link" href="so.html">
+                    Sales Order
+                </a>
+            </div>
+            <a href="so.html" class="arrow-btn">&#x2794;</a>
+        </li>
+
+        </ul>
+
+</body>
+</html>
