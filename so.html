@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SALES ORDER</title> 
+    <title>Sales Order</title> 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* ==================== 1. CSS STYLING UMUM (MINIMALIS & MODERN) ==================== */
+        /* ==================== 1. CSS STYLING UMUM ==================== */
         :root {
-            --primary-color: #000000; /* Teal - Modern, Clean */
-            --secondary-color: #000000; /* Blue Grey - Untuk Total/Grup Header */
-            --accent-color: #FFFF00; /* Orange - Untuk Highlight Nilai Total */
-            --bg-light: #f4f7f6;      /* Background umum (abu-abu sangat terang) */
-            --bg-card: #ffffff;       /* Background kontainer utama (putih murni) */
-            --text-dark: #212121;     /* Warna teks utama */
+            --primary-color: #000000; 
+            --secondary-color: #000000; 
+            --accent-color: #FFFF00; 
+            --bg-light: #f4f7f6;      
+            --bg-card: #ffffff;       
+            --text-dark: #212121;     
             --shadow-subtle: 0 4px 10px rgba(0, 0, 0, 0.08); 
             --header-bg: var(--primary-color);
         }
@@ -43,21 +43,27 @@
 
         /* --- HEADER UTAMA --- */
         h2 {
-            text-align: center;
-            padding: 15px 0; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px; 
             background-color: var(--header-bg); 
             color: white;
             margin: 0;
             font-size: 18px; 
             letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
-        /* --- HEADER INFO STYLING (FORM) --- */
+        #grand-total-display {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        /* --- HEADER INFO STYLING (FORM INPUT) --- */
         .header-info {
             padding: 12px; 
             background-color: var(--bg-card); 
-            border-bottom: 1px solid #e0e0e0; /* Border sangat halus */
+            border-bottom: 1px solid #e0e0e0; 
             display: flex; 
             flex-wrap: wrap; 
             gap: 10px; 
@@ -95,28 +101,6 @@
             outline: none;
         }
 
-        /* --- STYLING GRAND TOTAL BAR --- */
-        .grand-total-top {
-            padding: 12px 15px; 
-            background-color: var(--secondary-color); 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-        }
-
-        .grand-total-label {
-            font-size: 14px; 
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .grand-total-value {
-            color: var(--accent-color); 
-            font-size: 22px; 
-            font-weight: 700;
-        }
-
         /* --- FILTER BAR STYLING --- */
         .filter-bar {
             padding: 10px 12px; 
@@ -128,7 +112,7 @@
             gap: 8px; 
         }
         
-        #download-btn {
+        #review-btn-trigger {
             padding: 8px 16px; 
             font-size: 12px; 
             border-radius: 6px;
@@ -136,20 +120,15 @@
             color: white;
             border: none;
             cursor: pointer;
-            transition: background-color 0.2s, box-shadow 0.2s;
+            transition: background-color 0.2s;
         }
-        #download-btn:hover:not(:disabled) {
-            background-color: #007bff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        #download-btn:disabled {
+        #review-btn-trigger:disabled {
             background-color: #ced4da; 
             cursor: not-allowed;
             opacity: 0.8;
-            box-shadow: none;
         }
 
-        /* --- TABLE STYLING: NO BORDERS & CLEAN --- */
+        /* --- TABLE STYLING (INPUT PAGE) --- */
         .table-wrapper {
             max-height: 75vh; 
             overflow-y: auto; 
@@ -164,7 +143,6 @@
             font-size: 11px; 
         }
 
-        /* --- PENGATURAN LEBAR KOLOM (MOBILE OPTIMIZED) --- */
         thead th:nth-child(1) { width: 30%; } 
         thead th:nth-child(2) { width: 8%; } 
         thead tr:nth-child(2) th:nth-child(1) { width: 8%; } 
@@ -198,22 +176,13 @@
             border-bottom: none; 
         }
         
-        /* Penataan Teks */
-        .text-left {
-            text-align: left;
-            padding-left: 10px; 
-        }
-        .text-right {
-            text-align: right;
-            padding-right: 10px; 
-            font-weight: 500;
-        }
+        .text-left { text-align: left; padding-left: 5px; }
+        .text-right { text-align: right; padding-right: 5px; font-weight: 500; }
 
-        /* Styling untuk Input QTY dan DISC (Lebih kecil) */
         .order-input, .disc-input {
             width: 100%; 
             max-width: 45px; 
-            padding: 3px 1px; 
+            padding: 3px 0; 
             font-size: 11px; 
             height: 24px; 
             margin: auto; 
@@ -222,108 +191,319 @@
             border-radius: 4px;
             text-align: center;
         }
+		
+		.order-input:disabled {
+			border: none;
+			background: transparent;
+		}
+		
+        .disc-input { max-width: 40px; }
         
-        .disc-input {
-            max-width: 40px;
-        }
-        
-        /* Styling untuk Group Header (Pemisah Jelas) */
         .product-group-header td {
             background-color: var(--secondary-color) !important; 
             color: white;
             font-weight: 700;
             padding: 8px 10px !important; 
-            border-bottom: none !important;
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset; 
         }
         
-        /* ==================== 2. WARNA BERDASARKAN PRODUK (Soft Tones) ==================== */
-        .KEM-TONE-EXT-row { background-color: #f9f9f9; } 
-        .KEM-TONE-INT-row { background-color: #f9f9f9; } 
-        .ULTRASHIELD-row { background-color: #f9f9f9; } 
-        .SPECTRUM-row { background-color: #f9f9f9; } 
-        .COLORTONE-EXT-row { background-color: #f9f9f9; } 
-        .COLORTONE-INT-row { background-color: #f9f9f9; } 
-        .SPECTRUM-SWOB-row { background-color: #f9f9f9; } 
-        .SPECTRUM-ECO-row { background-color: #f9f9f9; } 
-        .AEROSOL-row { background-color: #f9f9f9; } 
-        .COLORANT-row { background-color: #f9f9f9; } 
-        .ABC-row { background-color: #f9f9f9; } 
-        /* ABC-ZINCHROMATE dihapus */
-        .TAMITEX-CT-row { background-color: #f9f9f9; } 
-        .TAMITEX-WF-row { background-color: #f9f9f9; } 
-        .TAMITEX-CG-row { background-color: #f9f9f9; } 
-        .VINOTEX-CT-row { background-color: #f9f9f9; } 
-        .VINOTEX-WF-row { background-color: #f9f9f9; } 
-        .APOLLO-row { background-color: #f9f9f9; } 
-        /* SANLUX-ZINCHROMATE dihapus */
-        .SPECTRUM-GRANITE-row { background-color: #f9f9f9; } 
-        .SPECTRUM-FLOORKOTE-row { background-color: #f9f9f9; } 
+        .KEM-TONE-EXT-row, .KEM-TONE-INT-row, .ULTRASHIELD-row, .SPECTRUM-row,
+        .COLORTONE-EXT-row, .COLORTONE-INT-row, .SPECTRUM-SWOB-row, .SPECTRUM-ECO-row,
+        .AEROSOL-row, .COLORANT-row, .ABC-row, .TAMITEX-CT-row, .TAMITEX-WF-row,
+        .TAMITEX-CG-row, .VINOTEX-CT-row, .VINOTEX-WF-row, .APOLLO-row,
+        .SPECTRUM-GRANITE-row, .SPECTRUM-FLOORKOTE-row { background-color: #f9f9f9; } 
+
+
+        /* ==================== STYLING KHUSUS HALAMAN REVIEW ==================== */
+        #review-page {
+            display: none; 
+            background-color: white;
+        }
+
+        #capture-area {
+            background-color: white;
+            padding: 38px;   /* Margin 1cm (1cm ≈ 38px pada 96dpi) */
+            color: var(--text-dark);
+            width: fit-content;
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .review-header-title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .review-info-table {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .review-info-table td {
+            padding: 2px 0;
+            border: none;
+        }
+        .review-label {
+            width: 80px;
+            color: black;
+        }
+        .review-value {
+            font-weight: bold;
+            text-transform: uppercase;
+            color: black;
+        }
+
+        .review-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            table-layout: auto; 
+            color: black;
+        }
+
+        .review-table th {
+            background-color: black; 
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            border-bottom: 1px solid white;
+            padding: 8px 5px;
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
+
+        .review-table td {
+            border: none; 
+            border-bottom: 1px solid #e0e0e0; 
+            padding: 8px 5px;
+            color: black;
+        }
+        
+        .rev-col-product-group { 
+            text-align: left; 
+            font-weight: normal;
+            min-width: 90px;
+            white-space: normal;
+        }
+        .rev-col-product-cat { 
+            text-align: left; 
+            font-weight: normal;
+            min-width: 110px;
+            white-space: normal;
+        }
+        .rev-col-disc { 
+            text-align: center; 
+            min-width: 45px;
+            white-space: normal;
+        }
+        .rev-col-qty { 
+            text-align: center; 
+            min-width: 35px;
+            white-space: normal;
+        }
+        /* Update: Kolom total otomatis menyesuaikan lebar isi */
+        .rev-col-total { 
+            text-align: right; 
+            width: auto;
+            white-space: nowrap;
+            font-weight: bold;
+            padding-left: 10px !important;
+        }
+
+        .review-grand-total-row td {
+            border: none;
+            padding: 0;
+            height: 30px;
+        }
+
+        .bg-black-total {
+            background-color: transparent !important; 
+            color: black !important; 
+            font-weight: bold;
+            font-size: 16px; 
+            text-align: right;
+            padding: 10px 0px !important; 
+            border: none !important;
+            white-space: nowrap;
+        }
+
+        /* --- STYLING CATATAN PERBAIKAN --- */
+        .review-notes-section {
+            margin-top: 15px;
+            padding-top: 5px;
+            width: 100%;
+        }
+        .review-notes-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: black;
+        }
+        .review-notes-section textarea {
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 0; /* Padding 0 supaya sejajar dengan border tabel */
+            border: none;   /* Hilangkan border */
+            border-radius: 0;
+            background: transparent;
+            font-family: inherit;
+            font-size: 12px;
+            resize: none;
+            box-sizing: border-box;
+            line-height: 1.4;
+            color: black;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .review-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            width: 45%; 
+            max-width: 150px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-edit { background-color: #ff9800; } 
+        .btn-save-jpg { background-color: #28a745; } 
 
     </style>
 </head>
 <body>
 
-<div class="sales-order-container" id="sales-order-capture">
-    <h2>SALES ORDER</h2> 
+<div class="sales-order-container">
     
-    <div class="header-info">
-        <div class="info-row">
-            <label for="nama-toko">Toko:</label>
-            <input type="text" id="nama-toko" placeholder="Nama dan Alamat Toko">
+    <div id="main-form">
+        <h2>
+            <span>Sales Order</span>
+            <span id="grand-total-display">0</span>
+        </h2> 
+        
+        <div class="header-info">
+            <div class="info-row">
+                <label for="nama-toko">Toko:</label>
+                <input type="text" id="nama-toko" placeholder="Nama dan Alamat Toko">
+            </div>
+            <div class="info-row">
+                <label for="salesman">Salesman:</label>
+                <input type="text" id="salesman" placeholder="Nama Salesman">
+            </div>
         </div>
-        <div class="info-row">
-            <label for="salesman">Salesman:</label>
-            <input type="text" id="salesman" placeholder="Nama Salesman">
+        
+        <div class="filter-bar">
+            <label for="filter-active">
+                <input type="checkbox" id="filter-active"> 
+                Tampilkan pesanan yang terisi
+            </label>
+            <button id="review-btn-trigger" disabled>Simpan</button>
+        </div>
+        
+        <div class="table-wrapper" id="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="text-left">PRODUK</th>
+                        <th rowspan="2">DISC</th>
+                        <th colspan="3">ORDER (QTY)</th>
+                        <th rowspan="2">TOTAL (RP)</th>
+                    </tr>
+                    <tr>
+                        <th>KG</th>
+                        <th>GLN</th>
+                        <th>PL</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="grand-total-top">
-        <div class="grand-total-label">Grand Total</div>
-        <div id="grand-total-display" class="grand-total-value">0</div>
+    <div id="review-page">
+        <div class="review-scroll-wrapper">
+            <div id="capture-area">
+                <div class="review-header-title">Sales Order</div>
+                
+                <table class="review-info-table">
+                    <tr>
+                        <td class="review-label">Toko</td>
+                        <td class="review-value" id="review-toko">-</td>
+                    </tr>
+                    <tr>
+                        <td class="review-label">Salesman</td>
+                        <td class="review-value" id="review-salesman">-</td>
+                    </tr>
+                </table>
+
+                <table class="review-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" colspan="2">Produk</th> 
+                            <th rowspan="2">DISC</th>
+                            <th colspan="3">ORDER (QTY)</th>
+                            <th rowspan="2">TOTAL (RP)</th>
+                        </tr>
+                        <tr>
+                            <th>KG</th>
+                            <th>GLN</th>
+                            <th>PL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="review-table-body">
+                        </tbody>
+                    <tfoot>
+                        <tr class="review-grand-total-row">
+                            <td colspan="6" style="border:none;"></td> 
+                            <td id="review-grand-total" class="bg-black-total">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="review-notes-section">
+                    <label for="catatan-so">Catatan:</label>
+                    <textarea id="catatan-so" placeholder="Tulis kode warna, voucher, atau apapun di sini..." rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-actions">
+            <button class="btn-action btn-edit" id="btn-edit">Edit</button>
+            <button class="btn-action btn-save-jpg" id="btn-save-jpg">Simpan JPG</button>
+        </div>
     </div>
-    
-    <div class="filter-bar">
-        <label for="filter-active">
-            <input type="checkbox" id="filter-active"> 
-            Tampilkan pesanan yang terisi
-        </label>
-        <button id="download-btn" disabled>Simpan</button>
-    </div>
-    
-    <div class="table-wrapper" id="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2" class="text-left">PRODUK</th>
-                    <th rowspan="2">DISC (%)</th>
-                    <th colspan="3" class="header-group">ORDER (QTY)</th>
-                    <th rowspan="2">TOTAL (RP)</th>
-                </tr>
-                <tr>
-                    <th>KG</th>
-                    <th>GLN</th>
-                    <th>PL</th>
-                </tr>
-            </thead>
-            <tbody id="product-list">
-                </tbody>
-        </table>
-    </div>
+
 </div>
 
 <script>
-    // Data Produk LENGKAP (SANLUX ZINCHROMATE & ABC ZINCHROMATE DIHAPUS)
     const productData = [
-        // --- KEM-TONE EXT (Disc 17.5%) ---
         { produk: "KEM-TONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 563000, hargaPl: 2741300, disc: 17.5 },
         { produk: "KEM-TONE EXT", kategori: "ALKALI", hargaKg: 0, hargaGln: 425500, hargaPl: 1960400, disc: 17.5 },
         { produk: "KEM-TONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 483700, hargaPl: 2397500, disc: 17.5 },
         { produk: "KEM-TONE EXT", kategori: "UWE", hargaKg: 0, hargaGln: 495400, hargaPl: 2465100, disc: 17.5 },
         { produk: "KEM-TONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 449900, hargaPl: 2136400, disc: 17.5 },
         { produk: "KEM-TONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 396300, hargaPl: 1871800, disc: 17.5 },
-
-        // --- KEM-TONE INT (Disc 17.5%) ---
         { produk: "KEM-TONE INT", kategori: "WHITE INT", hargaKg: 0, hargaGln: 381200, hargaPl: 1820600, disc: 17.5 },
         { produk: "KEM-TONE INT", kategori: "ALKALI", hargaKg: 0, hargaGln: 327600, hargaPl: 1511700, disc: 17.5 },
         { produk: "KEM-TONE INT", kategori: "TBA", hargaKg: 0, hargaGln: 339200, hargaPl: 1625900, disc: 17.5 },
@@ -338,15 +518,11 @@
         { produk: "KEM-TONE INT", kategori: "PAINT REMOVER (SOLVENT)", hargaKg: 88600, hargaGln: 299600, hargaPl: 1456900, disc: 17.5 },
         { produk: "KEM-TONE INT", kategori: "TECHNIQUE GLAZE", hargaKg: 71100, hargaGln: 254100, hargaPl: 0, disc: 17.5 },
         { produk: "KEM-TONE INT", kategori: "RUSH REMOVER", hargaKg: 0, hargaGln: 271600, hargaPl: 1023400, disc: 17.5 },
-        
-        // --- ULTRASHIELD (Disc 15.0%) ---
         { produk: "ULTRASHIELD", kategori: "PUTIH", hargaKg: 0, hargaGln: 378200, hargaPl: 1802500, disc: 15.0 },
         { produk: "ULTRASHIELD", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 399700, hargaPl: 1903300, disc: 15.0 },
         { produk: "ULTRASHIELD", kategori: "TBM", hargaKg: 0, hargaGln: 361200, hargaPl: 1733400, disc: 15.0 },
         { produk: "ULTRASHIELD", kategori: "DBO", hargaKg: 0, hargaGln: 313700, hargaPl: 1499100, disc: 15.0 },
         { produk: "ULTRASHIELD", kategori: "NBT", hargaKg: 0, hargaGln: 308000, hargaPl: 1408500, disc: 15.0 },
-        
-        // --- SPECTRUM (Disc 15.0%) ---
         { produk: "SPECTRUM", kategori: "ALKALI", hargaKg: 0, hargaGln: 199300, hargaPl: 911500, disc: 15.0 },
         { produk: "SPECTRUM", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 181200, hargaPl: 862800, disc: 15.0 },
         { produk: "SPECTRUM", kategori: "PUTIH", hargaKg: 0, hargaGln: 203800, hargaPl: 977100, disc: 15.0 },
@@ -354,36 +530,24 @@
         { produk: "SPECTRUM", kategori: "DBC", hargaKg: 48700, hargaGln: 166500, hargaPl: 755200, disc: 15.0 },
         { produk: "SPECTRUM", kategori: "NBD", hargaKg: 44200, hargaGln: 146100, hargaPl: 681600, disc: 15.0 },
         { produk: "SPECTRUM", kategori: "YB", hargaKg: 46500, hargaGln: 162000, hargaPl: 733700, disc: 15.0 },
-
-        // --- COLORTONE EXT (Disc 12.5%) ---
         { produk: "COLORTONE EXT", kategori: "PUTIH EXT", hargaKg: 0, hargaGln: 208000, hargaPl: 947500, disc: 12.5 },
         { produk: "COLORTONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 167500, hargaPl: 803400, disc: 12.5 },
         { produk: "COLORTONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 143800, hargaPl: 675000, disc: 12.5 },
         { produk: "COLORTONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 133700, hargaPl: 626000, disc: 12.5 },
-
-        // --- COLORTONE INT (Disc 14.5%) ---
         { produk: "COLORTONE INT", kategori: "ALKALI", hargaKg: 101400, hargaGln: 141100, hargaPl: 685400, disc: 14.5 },
         { produk: "COLORTONE INT", kategori: "PUTIH INT", hargaKg: 101400, hargaGln: 141100, hargaPl: 685400, disc: 14.5 },
         { produk: "COLORTONE INT", kategori: "TBA", hargaKg: 92100, hargaGln: 125900, hargaPl: 588600, disc: 14.5 },
         { produk: "COLORTONE INT", kategori: "DBC", hargaKg: 75800, hargaGln: 101400, hargaPl: 452300, disc: 14.5 },
         { produk: "COLORTONE INT", kategori: "NBD", hargaKg: 65300, hargaGln: 87500, hargaPl: 404500, disc: 14.5 },
-
-        // --- SPECTRUM SW08 (Disc 10.0%) ---
         { produk: "SPECTRUM SW08", kategori: "ABU/PUTIH/OUTER SPACE", hargaKg: 65000, hargaGln: 245400, hargaPl: 1140000, disc: 15.0 },
         { produk: "SPECTRUM SW08", kategori: "MUDA", hargaKg: 56700, hargaGln: 203800, hargaPl: 1014500, disc: 15.0 },
         { produk: "SPECTRUM SW08", kategori: "NB", hargaKg: 51000, hargaGln: 180100, hargaPl: 852600, disc: 15.0 },
-
-        // --- SPECTRUM ECO (Disc 15.0%) ---
         { produk: "SPECTRUM ECO", kategori: "ALKALI 18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 700700, disc: 15.0 },
         { produk: "SPECTRUM ECO", kategori: "ALKALI 3,78 L", hargaKg: 0, hargaGln: 147900, disc: 15.0 },
         { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX 18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 765000, disc: 15.0 },
         { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX 3,78 L", hargaKg: 0, hargaGln: 168300, disc: 15.0 },
-
-        // --- AEROSOL (Disc 10.0%) ---
         { produk: "AEROSOL", kategori: "150 CC", hargaKg: 0, hargaGln: 16000, hargaPl: 0, disc: 10.0 },
         { produk: "AEROSOL", kategori: "300 CC", hargaKg: 0, hargaGln: 25000, hargaPl: 0, disc: 10.0 },
-
-        // --- COLORANT (Disc 10.0%) ---
         { produk: "COLORANT", kategori: "RED", hargaKg: 0, hargaGln: 350900, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "RED OXIDE", hargaKg: 0, hargaGln: 214500, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 232000, hargaPl: 0, disc: 10.0 },
@@ -397,106 +561,74 @@
         { produk: "COLORANT", kategori: "WHITE", hargaKg: 0, hargaGln: 251800, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "RED ORANGE", hargaKg: 0, hargaGln: 589500, hargaPl: 0, disc: 10.0 },
         { produk: "COLORANT", kategori: "PREMIUM YELLOW", hargaKg: 0, hargaGln: 1392000, hargaPl: 0, disc: 10.0 },
-
-        // --- ABC (Disc 10.0%) ---
         { produk: "ABC", kategori: "18,9 L", hargaKg: 0, hargaGln: 0, hargaPl: 1220900, disc: 10.0 },
         { produk: "ABC", kategori: "3,78 L", hargaKg: 0, hargaGln: 232300, disc: 10.0 },
         { produk: "ABC", kategori: "0,8 L", hargaKg: 0, hargaGln: 60100, disc: 10.0 },
         { produk: "ABC", kategori: "0,4 L", hargaKg: 0, hargaGln: 36000, disc: 10.0 },
         { produk: "ABC", kategori: "SILVER/COPPER 0,8 L", hargaKg: 0, hargaGln: 78500, disc: 10.0 },
         { produk: "ABC", kategori: "GOLD 0,8 L", hargaKg: 0, hargaGln: 120000, disc: 10.0 },
-        
-        // --- TAMITEX CT (Disc 10.0%) ---
         { produk: "TAMITEX CT", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 515900, disc: 10.0 },
         { produk: "TAMITEX CT", kategori: "5 KG", hargaKg: 0, hargaGln: 112200, disc: 10.0 },
         { produk: "TAMITEX CT", kategori: "1 KG", hargaKg: 0, hargaGln: 27500, disc: 10.0 },
-
-        // --- TAMITEX WF (Disc 10.0%) ---
         { produk: "TAMITEX WF", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 304700, disc: 10.0 },
         { produk: "TAMITEX WF", kategori: "4 KG", hargaKg: 0, hargaGln: 59400, disc: 10.0 },
         { produk: "TAMITEX WF", kategori: "1 KG", hargaKg: 18700, hargaGln: 0, hargaPl: 0, disc: 10.0 },
-
-        // --- TAMITEX CG (Disc 10.0%) ---
         { produk: "TAMITEX CG", kategori: "SPC 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 1269000, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 254500, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "SPC 1 KG", hargaKg: 74800, hargaGln: 0, hargaPl: 0, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "STD 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 983500, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "STD 4 KG", hargaKg: 0, hargaGln: 199500, disc: 10.0 },
         { produk: "TAMITEX CG", kategori: "STD 1 KG", hargaKg: 62400, hargaGln: 0, hargaPl: 0, disc: 10.0 },
-        
-        // --- VINOTEX CT (Disc 10.0%) ---
         { produk: "VINOTEX CT", kategori: "STD & VIP 23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 327800, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "STD & VIP 5 KG", hargaKg: 0, hargaGln: 78100, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "STD & VIP 1 KG", hargaKg: 20900, hargaGln: 0, hargaPl: 0, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "SPC 20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 408500, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "SPC 4 KG", hargaKg: 0, hargaGln: 96400, disc: 10.0 },
         { produk: "VINOTEX CT", kategori: "SPC 1 KG", hargaKg: 26400, hargaGln: 0, hargaPl: 0, disc: 10.0 },
-
-
-        // --- VINOTEX WF (Disc 10.0%) ---
         { produk: "VINOTEX WF", kategori: "23 KG", hargaKg: 0, hargaGln: 0, hargaPl: 232100, disc: 10.0 },
         { produk: "VINOTEX WF", kategori: "4 KG", hargaKg: 0, hargaGln: 49500, disc: 10.0 },
         { produk: "VINOTEX WF", kategori: "1 KG", hargaKg: 16500, hargaGln: 0, hargaPl: 0, disc: 10.0 },
-
-        // --- APOLLO (Disc 10.0%) ---
         { produk: "APOLLO", kategori: "20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 228900, disc: 10.0 },
         { produk: "APOLLO", kategori: "5 KG", hargaKg: 0, hargaGln: 59000, disc: 10.0 },
-        
-        // --- SPECTRUM GRANITE (Disc 10.0%) ---
         { produk: "SPECTRUM GRANITE", kategori: "GL", hargaKg: 0, hargaGln: 415000, hargaPl: 0, disc: 10.0 },
         { produk: "SPECTRUM GRANITE", kategori: "PL", hargaKg: 0, hargaGln: 0, hargaPl: 1950000, disc: 10.0 },
-
-        // --- SPECTRUM FLOORKOTE (Disc 10.0%) ---
         { produk: "SPECTRUM FLOORKOTE", kategori: "20 KG", hargaKg: 0, hargaGln: 0, hargaPl: 1130000, disc: 10.0 },
         { produk: "SPECTRUM FLOORKOTE", kategori: "4 KG", hargaKg: 0, hargaGln: 250000, disc: 10.0 },
     ];
     
-    // ==================== FUNGSI JAVASCRIPT (TIDAK ADA PERUBAHAN LOGIKA) ====================
-
-    // 1. Fungsi Utility untuk format Rupiah
     function formatRupiah(number) {
         if (number === 0 || isNaN(number)) return '-'; 
-        return Math.round(number).toLocaleString('id-ID', {
-            minimumFractionDigits: 0
-        });
+        return Math.round(number).toLocaleString('id-ID', { minimumFractionDigits: 0 });
     }
     
-    // 2. Fungsi untuk membuat baris tabel dari data produk
     function createTableRows(data) {
         let html = '';
         let lastProduct = '';
 
-        data.forEach((item) => {
+        data.forEach((item, index) => {
             const cssClassName = item.produk.replace(/\s/g, '-').replace(/\//g, '-').toUpperCase();
             
             if (item.produk && item.produk !== lastProduct) {
                 lastProduct = item.produk;
                 const headerClassName = cssClassName + '-header';
-                
                 html += `<tr class="product-group-header ${headerClassName}">`;
                 html += `<td colspan="5" class="group-label text-left">${item.produk}</td>`; 
                 html += `<td class="text-right">-</td>`;
                 html += `</tr>`;
             }
             
-            let rowHtml = `<tr class="product-row ${cssClassName}-row">`; 
-            
-            rowHtml += `<td class="text-left">${item.kategori}</td>`; 
-            
-            // Input Diskon
+            let rowHtml = `<tr class="product-row ${cssClassName}-row" data-index="${index}">`; 
+            rowHtml += `<td class="text-left row-category">${item.kategori}</td>`; 
             rowHtml += `<td><input type="number" min="0" max="100" value="${item.disc}" class="disc-input" step="0.5"></td>`;
             
             const disabledKg = item.hargaKg > 0 ? '' : 'disabled';
             const disabledGln = item.hargaGln > 0 ? '' : 'disabled';
             const disabledPl = item.hargaPl > 0 ? '' : 'disabled';
 
-            // Input QTY
             rowHtml += `<td><input type="number" min="0" value="" ${disabledKg} class="order-input kg-qty" data-price="${item.hargaKg}"></td>`;
             rowHtml += `<td><input type="number" min="0" value="" ${disabledGln} class="order-input gln-qty" data-price="${item.hargaGln}"></td>`;
             rowHtml += `<td><input type="number" min="0" value="" ${disabledPl} class="order-input pl-qty" data-price="${item.hargaPl}"></td>`;
-
             rowHtml += `<td class="total-row text-right" data-total="0">-</td>`;
-
             rowHtml += `</tr>`;
             html += rowHtml;
         });
@@ -505,18 +637,15 @@
         attachEventListeners();
     }
     
-    // 3. Fungsi untuk menerapkan filter pada satu baris
     function applyRowFilter(row, total) {
         const filterActive = document.getElementById('filter-active').checked;
         const isProductRow = row.classList.contains('product-row');
-
         if (filterActive) {
             if (isProductRow && total === 0) {
                 row.style.display = 'none'; 
             } else {
                 row.style.display = ''; 
             }
-            
             if (row.classList.contains('product-group-header')) {
                  row.style.display = '';
             }
@@ -525,9 +654,7 @@
         }
     }
 
-    // 4. Fungsi Utama untuk menghitung Total per Baris
     function calculateRow(row) {
-        
         const inputKg = row.querySelector('.kg-qty');
         const inputGln = row.querySelector('.gln-qty');
         const inputPl = row.querySelector('.pl-qty');
@@ -537,19 +664,13 @@
 
         const hargaKg = parseFloat(inputKg.dataset.price) || 0;
         const qtyKg = parseFloat(inputKg.value) || 0; 
-
         const hargaGln = parseFloat(inputGln.dataset.price) || 0;
         const qtyGln = parseFloat(inputGln.value) || 0;
-
         const hargaPl = parseFloat(inputPl.dataset.price) || 0;
         const qtyPl = parseFloat(inputPl.value) || 0;
-        
         const discPercent = parseFloat(inputDisc.value) || 0; 
-        const diskon = discPercent / 100;
-
-        const subTotal = (hargaKg * qtyKg) + (hargaGln * qtyGln) + (hargaPl * qtyPl);
         
-        let total = subTotal * (1 - diskon);
+        let total = ((hargaKg * qtyKg) + (hargaGln * qtyGln) + (hargaPl * qtyPl)) * (1 - (discPercent / 100));
         total = Math.round(total); 
 
         const totalDisplayElement = row.querySelector('.total-row');
@@ -557,43 +678,27 @@
         totalDisplayElement.textContent = formatRupiah(total);
 
         applyRowFilter(row, total);
-        
         calculateGrandTotal();
     }
 
-    // 5. Fungsi untuk menghitung Grand Total DAN MENYETEL STATUS TOMBOL
     function calculateGrandTotal() {
         let grandTotal = 0;
         const totalElements = document.querySelectorAll('.total-row');
-        const grandTotalDisplay = document.getElementById('grand-total-display');
-        const downloadBtn = document.getElementById('download-btn'); 
+        const reviewBtn = document.getElementById('review-btn-trigger'); 
         
         totalElements.forEach(element => {
-            const row = element.closest('.product-row');
-            
-             if (row.style.display !== 'none') {
-                const total = parseFloat(element.dataset.total) || 0;
-                grandTotal += total;
-            }
+            grandTotal += parseFloat(element.dataset.total) || 0;
         });
 
-        grandTotalDisplay.textContent = formatRupiah(grandTotal);
-
-        if (grandTotal === 0) {
-            downloadBtn.disabled = true;
-        } else {
-            downloadBtn.disabled = false;
-        }
+        document.getElementById('grand-total-display').textContent = formatRupiah(grandTotal);
+        reviewBtn.disabled = grandTotal === 0;
     }
 
-    // 6. Fungsi untuk men-toggle filter (Termasuk logika untuk header grup)
     function toggleFilter() {
         const allRows = document.querySelectorAll('#product-list > tr');
-        
         allRows.forEach(row => {
             if (row.classList.contains('product-row')) {
-                const totalString = row.querySelector('.total-row').dataset.total;
-                const total = parseFloat(totalString) || 0;
+                const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
                 applyRowFilter(row, total);
             }
         });
@@ -601,15 +706,12 @@
         const filterActive = document.getElementById('filter-active').checked;
         let visibleProductGroups = {}; 
 
-        // Tentukan grup mana yang memiliki produk terlihat
         document.querySelectorAll('.product-row').forEach(row => {
             if (row.style.display !== 'none') {
-                const productClass = row.classList[1].replace('-row', ''); 
-                visibleProductGroups[productClass] = true;
+                visibleProductGroups[row.classList[1].replace('-row', '')] = true;
             }
         });
         
-        // Sembunyikan atau tampilkan header grup
         document.querySelectorAll('.product-group-header').forEach(headerRow => {
             const productClass = headerRow.classList[1].replace('-header', '');
             if (filterActive && !visibleProductGroups[productClass]) {
@@ -622,123 +724,152 @@
         calculateGrandTotal(); 
     }
     
-    // 7. FUNGSI DOWNLOAD KE GALERI
-    async function downloadToGallery() {
-        const btn = document.getElementById('download-btn');
-        if (btn.disabled) {
-             alert("Grand Total masih kosong. Mohon isi pesanan terlebih dahulu.");
-             return; 
-        }
+    function showReviewPage() {
+        const namaToko = document.getElementById('nama-toko').value.trim() || "-";
+        const salesman = document.getElementById('salesman').value.trim() || "-";
 
-        const container = document.getElementById('sales-order-capture');
-        const tableWrapper = document.getElementById('table-wrapper');
+        document.getElementById('review-toko').textContent = namaToko;
+        document.getElementById('review-salesman').textContent = salesman;
+
+        const tbody = document.getElementById('review-table-body');
+        tbody.innerHTML = '';
+        
+        let currentGrandTotal = 0;
+        const rows = document.querySelectorAll('.product-row');
+
+        rows.forEach(row => {
+            const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
+            
+            if (total > 0) {
+                currentGrandTotal += total;
+                const dataIndex = row.dataset.index;
+                const productObj = productData[dataIndex];
+                
+                const discVal = row.querySelector('.disc-input').value;
+                const kgVal = row.querySelector('.kg-qty').value;
+                const glnVal = row.querySelector('.gln-qty').value;
+                const plVal = row.querySelector('.pl-qty').value;
+                
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="rev-col-product-group">${productObj.produk}</td>
+                    <td class="rev-col-product-cat">${productObj.kategori}</td>
+                    <td class="rev-col-disc">${discVal.replace('.', ',')}%</td>
+                    <td class="rev-col-qty">${kgVal || ''}</td>
+                    <td class="rev-col-qty">${glnVal || ''}</td>
+                    <td class="rev-col-qty">${plVal || ''}</td>
+                    <td class="rev-col-total">${formatRupiah(total)}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+
+        document.getElementById('review-grand-total').textContent = formatRupiah(currentGrandTotal);
+
+        document.getElementById('main-form').style.display = 'none';
+        document.getElementById('review-page').style.display = 'block';
+
+        const catatanArea = document.getElementById('catatan-so');
+        catatanArea.style.height = 'auto';
+        catatanArea.style.height = (catatanArea.scrollHeight) + 'px';
+    }
+
+    function hideReviewPage() {
+        document.getElementById('review-page').style.display = 'none';
+        document.getElementById('main-form').style.display = 'block';
+    }
+
+    /* Update: Fungsi dengan perbaikan Element Swap untuk capture catatan textarea */
+    async function saveReviewAsJpg() {
+        const captureElement = document.getElementById('capture-area');
         const namaToko = document.getElementById('nama-toko').value.trim() || "SO"; 
+        const catatanArea = document.getElementById('catatan-so');
         
-        // --- 1. SIAPKAN TAMPILAN UNTUK CAPTURE ---
-        const originalBtnDisplay = btn.style.display;
-        
-        const originalWrapperMaxHeight = tableWrapper.style.maxHeight;
-        const originalWrapperOverflow = tableWrapper.style.overflowY;
-        const filterCheckbox = document.getElementById('filter-active');
-        const originalFilterState = filterCheckbox.checked;
+        // --- PROSES ELEMENT SWAP ---
+        // 1. Simpan nilai asli dan referensi parent
+        const parent = catatanArea.parentNode;
+        const originalValue = catatanArea.value;
 
-        // Sembunyikan tombol download
-        btn.style.display = 'none'; 
-        
-        // Pastikan seluruh tabel terlihat tanpa scroll
-        tableWrapper.style.maxHeight = 'initial';
-        tableWrapper.style.overflowY = 'initial';
+        // 2. Buat elemen DIV pengganti agar format teks/enter terbaca sempurna oleh html2canvas
+        const textReplacement = document.createElement('div');
+        textReplacement.style.width = '100%';
+        textReplacement.style.fontSize = '12px';
+        textReplacement.style.fontFamily = 'inherit';
+        textReplacement.style.color = 'black';
+        textReplacement.style.whiteSpace = 'pre-wrap'; // Menjaga baris baru (Enter)
+        textReplacement.style.wordWrap = 'break-word';
+        textReplacement.style.paddingTop = '5px';
+        textReplacement.innerText = originalValue || "-";
 
-        // Aktifkan filter agar hanya pesanan terisi yang terekam
-        filterCheckbox.checked = true;
-        toggleFilter(); 
-
-        await new Promise(resolve => setTimeout(resolve, 100)); 
-
+        // 3. Tukar sementara: Sembunyikan textarea, tampilkan div
+        catatanArea.style.display = 'none';
+        parent.appendChild(textReplacement);
 
         try {
-            // --- 2. KONVERSI MENGGUNAKAN HTML2CANVAS ---
-            const canvas = await html2canvas(container, {
-                scale: 3, 
-                allowTaint: true,
+            const canvas = await html2canvas(captureElement, {
+                scale: 2, 
+                backgroundColor: '#ffffff',
                 useCORS: true,
-                backgroundColor: '#ffffff', 
+                width: captureElement.scrollWidth,
+                height: captureElement.scrollHeight,
+                windowWidth: captureElement.scrollWidth,
+                windowHeight: captureElement.scrollHeight,
+                x: 0,
+                y: 0
             });
 
-            // --- 3. PROSES UNDUH FILE ---
-            
-            const imageURL = canvas.toDataURL('image/png');
+            const imageURL = canvas.toDataURL('image/jpeg', 0.95);
             
             const downloadLink = document.createElement('a');
             downloadLink.href = imageURL;
-            downloadLink.download = `SO_${namaToko.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}_${new Date().toISOString().slice(0, 10)}.png`;
+            downloadLink.download = `SO_${namaToko.replace(/\s/g, '_').toUpperCase()}_${new Date().toISOString().slice(0, 10)}.jpg`;
             
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
 
-            // --- 4. POP UP KONFIRMASI ---
-            alert("Gambar Sales Order berhasil tersimpan di galeri (Unduhan).");
-
         } catch (error) {
-            console.error("Gagal membuat atau mengunduh gambar SO:", error);
-            alert("Gagal membuat gambar SO. Pastikan browser Anda mendukung fungsi ini atau coba lagi.");
+            console.error("Gagal save JPG:", error);
+            alert("Gagal menyimpan gambar. Silakan coba lagi.");
         } finally {
-            // --- 5. KEMBALIKAN TAMPILAN KE KONDISI SEMULA ---
-            filterCheckbox.checked = originalFilterState;
-            toggleFilter(); 
-
-            btn.style.display = originalBtnDisplay;
-            tableWrapper.style.maxHeight = originalWrapperMaxHeight;
-            tableWrapper.style.overflowY = originalWrapperOverflow;
-            calculateGrandTotal(); 
+            // --- KEMBALIKAN KE SEMULA ---
+            // Hapus div pengganti dan tampilkan kembali textarea asli
+            parent.removeChild(textReplacement);
+            catatanArea.style.display = 'block';
         }
     }
 
-
-    // 8. Fungsi untuk melampirkan Event Listener ke input
     function attachEventListeners() {
         const qtyInputs = document.querySelectorAll('.order-input');
         const discInputs = document.querySelectorAll('.disc-input');
-        const filterCheckbox = document.getElementById('filter-active');
-        const downloadBtn = document.getElementById('download-btn');
         
-        // Listener untuk Input QTY dan DISC
         [...qtyInputs, ...discInputs].forEach(input => {
             input.addEventListener('input', function() {
-                // Batasan nilai input
                 if (this.classList.contains('disc-input')) {
-                    if (parseFloat(this.value) < 0) this.value = 0; 
                     if (parseFloat(this.value) > 100) this.value = 100; 
-                } else if (parseFloat(this.value) < 0) {
-                    this.value = 0; 
-                }
-                const row = this.closest('.product-row');
-                calculateRow(row);
+                } 
+                if (parseFloat(this.value) < 0) this.value = 0; 
+                
+                calculateRow(this.closest('.product-row'));
             });
-            // Hitung sekali saat awal load
-            const row = input.closest('.product-row');
-            calculateRow(row);
+            calculateRow(input.closest('.product-row'));
         });
         
-        // Listener untuk Filter
-        if (filterCheckbox) {
-            filterCheckbox.addEventListener('change', toggleFilter);
-        }
-        
-        // Listener untuk tombol Download
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', downloadToGallery);
-        }
+        document.getElementById('filter-active').addEventListener('change', toggleFilter);
+        document.getElementById('review-btn-trigger').addEventListener('click', showReviewPage);
+        document.getElementById('btn-edit').addEventListener('click', hideReviewPage);
+        document.getElementById('btn-save-jpg').addEventListener('click', saveReviewAsJpg);
+
+        const catatanArea = document.getElementById('catatan-so');
+        catatanArea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
     }
 
-    // 9. Jalankan fungsi utama saat dokumen dimuat
     document.addEventListener('DOMContentLoaded', () => {
         createTableRows(productData);
     });
 </script>
 </body>
 </html>
-
-
-
