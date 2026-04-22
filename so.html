@@ -265,6 +265,7 @@
             font-size: 11px;
             table-layout: auto; 
             color: black;
+            margin-bottom: 15px;
         }
 
         .review-table th {
@@ -305,9 +306,9 @@
         }
         .rev-col-qty { 
             text-align: center;           
-            min-width: 120px;           /* diperlebar sedikit supaya muat 2-3 item */
+            min-width: 120px;           
             white-space: normal;
-            padding-left: 8px;          /* sedikit indent agar lebih rapi */
+            padding-left: 8px;          
         }
         .rev-col-total { 
             text-align: right; 
@@ -317,25 +318,67 @@
             padding-left: 10px !important;
         }
 
-        .review-grand-total-row td {
-            border: none;
-            padding: 0;
-            height: 30px;
+        /* === BAGIAN TOTAL YANG DIRAPIHKAN === */
+        .review-total-section {
+            width: 100%;
+            border-top: 2px solid #333;
+            padding-top: 12px;
+            margin-top: 10px;
         }
 
-        .bg-black-total {
-            background-color: transparent !important; 
-            color: black !important; 
+        .review-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .review-total-label {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .review-total-value {
             font-weight: bold;
-            font-size: 16px; 
             text-align: right;
-            padding: 10px 0px !important; 
-            border: none !important;
-            white-space: nowrap;
+            min-width: 140px;
+        }
+
+        .review-grand-total-row {
+            background-color: #f8f8f8;
+            padding: 12px 0;
+            border-top: 2px solid #000;
+            margin-top: 8px;
+        }
+
+        .review-grand-total-row .review-total-label {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .review-grand-total-row .review-total-value {
+            font-size: 18px;
+            color: #000;
+        }
+
+        .diskon-input-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diskon-input-container input {
+            width: 80px;
+            text-align: center;
+            font-size: 13px;
+            padding: 6px 8px;
+            border: 1px solid #999;
+            border-radius: 4px;
         }
 
         .review-notes-section {
-            margin-top: 15px;
+            margin-top: 20px;
             padding-top: 5px;
             width: 100%;
         }
@@ -365,7 +408,7 @@
         }
 
         .review-actions {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             justify-content: center;
             gap: 15px;
@@ -395,7 +438,7 @@
     
     <div id="main-form">
         <h2>
-            <span>Sales Order (HB FEB2026)</span>
+            <span>Sales Order (HB APR26)</span>
             <span id="grand-total-display">0</span>
         </h2> 
         
@@ -459,13 +502,27 @@
                         </tr>
                     </thead>
                     <tbody id="review-table-body"></tbody>
-                    <tfoot>
-                        <tr class="review-grand-total-row">
-                            <td colspan="4" style="border:none;"></td> 
-                            <td id="review-grand-total" class="bg-black-total">0</td>
-                        </tr>
-                    </tfoot>
                 </table>
+
+                <!-- Bagian Total yang sudah dirapikan -->
+                <div class="review-total-section">
+                    <div class="review-total-row">
+                        <span class="review-total-label">SUB TOTAL</span>
+                        <span id="review-sub-total" class="review-total-value">0</span>
+                    </div>
+                    
+                    <div class="review-total-row">
+                        <span class="review-total-label">DISKON TAMBAHAN (%)</span>
+                        <div class="diskon-input-container">
+                            <input type="number" id="diskon-tambahan" min="0" max="100" value="0" step="0.5">
+                        </div>
+                    </div>
+                    
+                    <div class="review-total-row review-grand-total-row">
+                        <span class="review-total-label">GRAND TOTAL</span>
+                        <span id="review-grand-total" class="review-total-value">0</span>
+                    </div>
+                </div>
 
                 <div class="review-notes-section">
                     <label for="catatan-so">Catatan:</label>
@@ -484,99 +541,99 @@
 
 <script>
     const productData = [
-        { produk: "KEM-TONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 579900, hargaPl: 2823600, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE EXT", kategori: "ALKALI", hargaKg: 0, hargaGln: 438300, hargaPl: 2019300, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 498300, hargaPl: 2469500, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE EXT", kategori: "UWE", hargaKg: 0, hargaGln: 510300, hargaPl: 2539100, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 472400, hargaPl: 2200500, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 416200, hargaPl: 1928000, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 620500, hargaPl: 3021300, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "ALKALI", hargaKg: 0, hargaGln: 469000, hargaPl: 2160700, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 533200, hargaPl: 2642400, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "UWE", hargaKg: 0, hargaGln: 546100, hargaPl: 2716900, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 505500, hargaPl: 2354600, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 445400, hargaPl: 2063000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "KEM-TONE INT", kategori: "WHITE INT", hargaKg: 0, hargaGln: 392700, hargaPl: 1875300, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "ALKALI", hargaKg: 0, hargaGln: 337500, hargaPl: 1557100, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "TBA", hargaKg: 0, hargaGln: 349400, hargaPl: 1674700, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "UWI", hargaKg: 0, hargaGln: 392700, hargaPl: 1901600, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "DBC", hargaKg: 94100, hargaGln: 334200, hargaPl: 1499500, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "NBD", hargaKg: 93100, hargaGln: 318300, hargaPl: 1479000, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "3 IN 1", hargaKg: 0, hargaGln: 473100, hargaPl: 2233000, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 473100, hargaPl: 2233000, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 249800, hargaPl: 1194500, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "WALL FILLER", hargaKg: 0, hargaGln: 176600, hargaPl: 762400, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "WALL SEALER (SOLVENT)", hargaKg: 0, hargaGln: 311000, hargaPl: 1431000, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "PAINT REMOVER (SOLVENT)", hargaKg: 91300, hargaGln: 308600, hargaPl: 1500700, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "TECHNIQUE GLAZE", hargaKg: 73300, hargaGln: 261800, hargaPl: 0, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "KEM-TONE INT", kategori: "RUSH REMOVER", hargaKg: 0, hargaGln: 279800, hargaPl: 1054200, disc: 17.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "WHITE INT", hargaKg: 0, hargaGln: 420200, hargaPl: 2006600, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "ALKALI", hargaKg: 0, hargaGln: 361200, hargaPl: 1666100, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "TBA", hargaKg: 0, hargaGln: 373900, hargaPl: 1792000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "UWI", hargaKg: 0, hargaGln: 420200, hargaPl: 2034800, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "DBC", hargaKg: 101000, hargaGln: 357600, hargaPl: 1604500, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "NBD", hargaKg: 99700, hargaGln: 340600, hargaPl: 1582600, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "3 IN 1", hargaKg: 0, hargaGln: 506300, hargaPl: 2389400, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 506300, hargaPl: 2389400, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 267300, hargaPl: 1278200, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "WALL FILLER", hargaKg: 0, hargaGln: 189000, hargaPl: 815800, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "WALL SEALER (SOLVENT)", hargaKg: 0, hargaGln: 332800, hargaPl: 1531200, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "PAINT REMOVER (SOLVENT)", hargaKg: 97700, hargaGln: 330300, hargaPl: 1605800, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "TECHNIQUE GLAZE", hargaKg: 78500, hargaGln: 280200, hargaPl: 0, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "KEM-TONE INT", kategori: "RUSH REMOVER", hargaKg: 0, hargaGln: 299400, hargaPl: 1128000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "ULTRASHIELD", kategori: "PUTIH", hargaKg: 0, hargaGln: 389600, hargaPl: 1856600, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ULTRASHIELD", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 411700, hargaPl: 1960400, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ULTRASHIELD", kategori: "TBM", hargaKg: 0, hargaGln: 379300, hargaPl: 1785500, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ULTRASHIELD", kategori: "DBO", hargaKg: 0, hargaGln: 329400, hargaPl: 1544100, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ULTRASHIELD", kategori: "NBT", hargaKg: 0, hargaGln: 323400, hargaPl: 1450800, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ULTRASHIELD", kategori: "WHITE", hargaKg: 0, hargaGln: 428600, hargaPl: 2042300, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ULTRASHIELD", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 452900, hargaPl: 2156500, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ULTRASHIELD", kategori: "TBM", hargaKg: 0, hargaGln: 417300, hargaPl: 1964100, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ULTRASHIELD", kategori: "DBO", hargaKg: 0, hargaGln: 362400, hargaPl: 1698600, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ULTRASHIELD", kategori: "NBT", hargaKg: 0, hargaGln: 355800, hargaPl: 1595900, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "SPECTRUM", kategori: "ALKALI", hargaKg: 0, hargaGln: 205300, hargaPl: 938900, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 186700, hargaPl: 888700, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "PUTIH", hargaKg: 0, hargaGln: 210000, hargaPl: 1006500, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "TBA", hargaKg: 0, hargaGln: 198300, hargaPl: 906200, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "DBC", hargaKg: 51200, hargaGln: 174900, hargaPl: 777900, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "NBD", hargaKg: 46500, hargaGln: 153500, hargaPl: 702100, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM", kategori: "YB", hargaKg: 48900, hargaGln: 170100, hargaPl: 755800, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "ALKALI", hargaKg: 0, hargaGln: 225900, hargaPl: 1032800, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 205400, hargaPl: 977600, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "WHITE", hargaKg: 0, hargaGln: 231000, hargaPl: 1107200, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "TBA", hargaKg: 0, hargaGln: 218200, hargaPl: 996900, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "DBC", hargaKg: 56400, hargaGln: 192400, hargaPl: 855700, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "NBD", hargaKg: 51200, hargaGln: 168900, hargaPl: 772400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM", kategori: "YB", hargaKg: 53800, hargaGln: 187200, hargaPl: 831400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "COLORTONE EXT", kategori: "PUTIH EXT", hargaKg: 0, hargaGln: 218500, hargaPl: 995000, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 175900, hargaPl: 843600, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 155400, hargaPl: 729000, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 144400, hargaPl: 676100, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 240400, hargaPl: 1094500, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 193500, hargaPl: 928000, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 171000, hargaPl: 801900, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 158900, hargaPl: 743800, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
 		
-        { produk: "COLORTONE INT", kategori: "ALKALI", hargaKg: 104500, hargaGln: 145400, hargaPl: 706000, disc: 14.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE INT", kategori: "PUTIH INT", hargaKg: 104500, hargaGln: 145400, hargaPl: 706000, disc: 14.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE INT", kategori: "TBA", hargaKg: 96800, hargaGln: 132200, hargaPl: 606300, disc: 14.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE INT", kategori: "DBC", hargaKg: 79600, hargaGln: 106500, hargaPl: 465900, disc: 14.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
-        { produk: "COLORTONE INT", kategori: "NBD", hargaKg: 68600, hargaGln: 91900, hargaPl: 416700, disc: 14.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE INT", kategori: "ALKALI", hargaKg: 115000, hargaGln: 160000, hargaPl: 776600, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE INT", kategori: "PUTIH INT", hargaKg: 115000, hargaGln: 160000, hargaPl: 776600, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE INT", kategori: "TBA", hargaKg: 106500, hargaGln: 145500, hargaPl: 667000, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE INT", kategori: "DBC", hargaKg: 87600, hargaGln: 117200, hargaPl: 512500, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
+        { produk: "COLORTONE INT", kategori: "NBD", hargaKg: 75500, hargaGln: 101100, hargaPl: 458400, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
 		
-        { produk: "SPECTRUM SW08", kategori: "ABU/PUTIH/OUTER SPACE", hargaKg: 65000, hargaGln: 245400, hargaPl: 1140000, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM SW08", kategori: "MUDA", hargaKg: 56700, hargaGln: 203800, hargaPl: 1014500, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM SW08", kategori: "NB", hargaKg: 51000, hargaGln: 180100, hargaPl: 852600, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM SW08", kategori: "ABU/PUTIH/OUTER SPACE", hargaKg: 71500, hargaGln: 270000, hargaPl: 1254000, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM SW08", kategori: "MUDA", hargaKg: 62400, hargaGln: 224200, hargaPl: 1116000, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM SW08", kategori: "NB", hargaKg: 56100, hargaGln: 198200, hargaPl: 937900, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "SPECTRUM ECO", kategori: "ALKALI", hargaKg: 0, hargaGln: 155300, hargaPl: 735800, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX", hargaKg: 0, hargaGln: 176800, hargaPl: 803300, disc: 15.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM ECO", kategori: "ALKALI", hargaKg: 0, hargaGln: 170900, hargaPl: 809400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX", hargaKg: 0, hargaGln: 194500, hargaPl: 883700, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "AEROSOL", kategori: "AEROSOL", hargaKg: 16500, hargaGln: 25800, hargaPl: 0, disc: 10.0, placeholderKg: "150CC", placeholderGln: "300CC", placeholderPl: "PL" },
+        { produk: "AEROSOL", kategori: "AEROSOL", hargaKg: 19000, hargaGln: 29700, hargaPl: 0, disc: 10.0, placeholderKg: "150CC", placeholderGln: "300CC", placeholderPl: "PL" },
 		
-        { produk: "COLORANT", kategori: "RED", hargaKg: 0, hargaGln: 371600, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RED OXIDE", hargaKg: 0, hargaGln: 227200, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 245700, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "YELLOW OXIDE", hargaKg: 0, hargaGln: 206200, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "BLUE", hargaKg: 0, hargaGln: 165400, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 406700, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "VIOLET", hargaKg: 0, hargaGln: 214800, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RAW UMBER", hargaKg: 0, hargaGln: 110000, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "MAGENTA", hargaKg: 0, hargaGln: 282600, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "BLACK", hargaKg: 0, hargaGln: 161700, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "WHITE", hargaKg: 0, hargaGln: 266700, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RED ORANGE", hargaKg: 0, hargaGln: 624200, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "PREMIUM YELLOW", hargaKg: 0, hargaGln: 1473900, hargaPl: 0, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RED", hargaKg: 0, hargaGln: 408800, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RED OXIDE", hargaKg: 0, hargaGln: 250000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 270300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "YELLOW OXIDE", hargaKg: 0, hargaGln: 226900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "BLUE", hargaKg: 0, hargaGln: 182000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 447400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "VIOLET", hargaKg: 0, hargaGln: 236300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RAW UMBER", hargaKg: 0, hargaGln: 121000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "MAGENTA", hargaKg: 0, hargaGln: 310900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "BLACK", hargaKg: 0, hargaGln: 177900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "WHITE", hargaKg: 0, hargaGln: 293400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RED ORANGE", hargaKg: 0, hargaGln: 686700, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "PREMIUM YELLOW", hargaKg: 0, hargaGln: 1621300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "ABC", kategori: "STD", hargaKg: 0, hargaGln: 244000, hargaPl: 1282000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ABC", kategori: "STD", hargaKg: 37800, hargaGln: 63200, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" }, 
+        { produk: "ABC", kategori: "STD", hargaKg: 0, hargaGln: 268400, hargaPl: 1410200, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "ABC", kategori: "STD", hargaKg: 41600, hargaGln: 69600, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" }, 
         { produk: "ABC", kategori: "SILVER", hargaKg: 45700, hargaGln: 82500, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
         { produk: "ABC", kategori: "COPPER", hargaKg: 47300, hargaGln: 82500, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
 		{ produk: "ABC", kategori: "GOLD", hargaKg: 72500, hargaGln: 126000, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
 		
-        { produk: "TAMITEX CT", kategori: "TAMITEX CT", hargaKg: 28900, hargaGln: 117900, hargaPl: 541700, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "TAMITEX CT", kategori: "TAMITEX CT", hargaKg: 31800, hargaGln: 129700, hargaPl: 595900, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
-        { produk: "TAMITEX WF", kategori: "TAMITEX WF", hargaKg: 19700, hargaGln: 62400, hargaPl: 320000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "TAMITEX WF", kategori: "TAMITEX WF", hargaKg: 21700, hargaGln: 68700, hargaPl: 352000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
-        { produk: "TAMITEX CG", kategori: "SPC", hargaKg: 76300, hargaGln: 259600, hargaPl: 1294400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "TAMITEX CG", kategori: "STD", hargaKg: 64300, hargaGln: 205500, hargaPl: 1013005, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "TAMITEX CG", kategori: "SPC", hargaKg: 84000, hargaGln: 285600, hargaPl: 1423900, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "TAMITEX CG", kategori: "STD", hargaKg: 70800, hargaGln: 226100, hargaPl: 1114400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
-        { produk: "VINOTEX CT", kategori: "STD & VIP", hargaKg: 22000, hargaGln: 82100, hargaPl: 337600, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "VINOTEX CT", kategori: "SPC", hargaKg: 27200, hargaGln: 99300, hargaPl: 420800, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "VINOTEX CT", kategori: "STD & VIP", hargaKg: 24700, hargaGln: 90400, hargaPl: 371400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "VINOTEX CT", kategori: "SPC", hargaKg: 34500, hargaGln: 109300, hargaPl: 463000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "VINOTEX WF", kategori: "VINOTEX WF", hargaKg: 17400, hargaGln: 52000, hargaPl: 243800, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "VINOTEX WF", kategori: "VINOTEX WF", hargaKg: 19200, hargaGln: 57200, hargaPl: 268200, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
-        { produk: "APOLLO", kategori: "APOLLO", hargaKg: 0, hargaGln: 60800, hargaPl: 235800, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "APOLLO", kategori: "APOLLO", hargaKg: 0, hargaGln: 66900, hargaPl: 259400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
-        { produk: "SPECTRUM GRANITE", kategori: "SPECTRUM GRANITE", hargaKg: 0, hargaGln: 448200, hargaPl: 2106000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM GRANITE", kategori: "SPECTRUM GRANITE", hargaKg: 0, hargaGln: 484100, hargaPl: 2274500, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 		
-        { produk: "SPECTRUM FLOORKOTE", kategori: "SPECTRUM FLOORKOTE", hargaKg: 75000, hargaGln: 250000, hargaPl: 1130000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
+        { produk: "SPECTRUM FLOORKOTE", kategori: "SPECTRUM FLOORKOTE", hargaKg: 82500, hargaGln: 275000, hargaPl: 1243000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
     ];
     
     function formatRupiah(number) {
@@ -707,6 +764,34 @@
         calculateGrandTotal(); 
     }
     
+    let currentSubTotal = 0;
+
+    function updateGrandTotalWithDiskon() {
+        const diskonInput = document.getElementById('diskon-tambahan');
+        const subTotalEl = document.getElementById('review-sub-total');
+        const grandTotalEl = document.getElementById('review-grand-total');
+        
+        let diskonPersen = parseFloat(diskonInput.value) || 0;
+        if (diskonPersen > 100) diskonPersen = 100;
+        if (diskonPersen < 0) diskonPersen = 0;
+        
+        const diskonAmount = currentSubTotal * (diskonPersen / 100);
+        const grandTotal = Math.round(currentSubTotal - diskonAmount);
+        
+        subTotalEl.textContent = formatRupiah(currentSubTotal);
+        grandTotalEl.textContent = formatRupiah(grandTotal);
+    }
+
+    function setupDiskonTambahan() {
+        const diskonInput = document.getElementById('diskon-tambahan');
+        
+        diskonInput.addEventListener('input', () => {
+            if (parseFloat(diskonInput.value) > 100) diskonInput.value = 100;
+            if (parseFloat(diskonInput.value) < 0) diskonInput.value = 0;
+            updateGrandTotalWithDiskon();
+        });
+    }
+
     function showReviewPage() {
         const namaToko = document.getElementById('nama-toko').value.trim() || "-";
         const salesman = document.getElementById('salesman').value.trim() || "-";
@@ -717,14 +802,14 @@
         const tbody = document.getElementById('review-table-body');
         tbody.innerHTML = '';
         
-        let currentGrandTotal = 0;
+        let subTotal = 0;
         const rows = document.querySelectorAll('.product-row');
 
         rows.forEach(row => {
             const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
             
             if (total > 0) {
-                currentGrandTotal += total;
+                subTotal += total;
                 const dataIndex = row.dataset.index;
                 const productObj = productData[dataIndex];
                 
@@ -738,7 +823,7 @@
                 if (glnVal) qtyParts.push(`${glnVal} (${productObj.placeholderGln})`);
                 if (plVal)  qtyParts.push(`${plVal} (${productObj.placeholderPl})`);
                 
-                const qtyDisplay = qtyParts.join(' , ').trim();  // ← pemisah strip dengan spasi di sekitarnya
+                const qtyDisplay = qtyParts.join(' , ').trim();
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -752,7 +837,10 @@
             }
         });
 
-        document.getElementById('review-grand-total').textContent = formatRupiah(currentGrandTotal);
+        currentSubTotal = subTotal;
+        
+        document.getElementById('diskon-tambahan').value = 0;
+        updateGrandTotalWithDiskon();
 
         document.getElementById('main-form').style.display = 'none';
         document.getElementById('review-page').style.display = 'block';
@@ -760,6 +848,8 @@
         const catatanArea = document.getElementById('catatan-so');
         catatanArea.style.height = 'auto';
         catatanArea.style.height = (catatanArea.scrollHeight) + 'px';
+
+        setupDiskonTambahan();
     }
 
     function hideReviewPage() {
