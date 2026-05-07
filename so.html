@@ -138,10 +138,6 @@
             font-size: 11px; 
         }
 
-        thead th:nth-child(1) { width: 30%; } 
-        thead th:nth-child(2) { width: 8%; } 
-        thead th:nth-child(6) { width: 38%; } 
-
         thead {
             background-color: var(--primary-color);
             color: white;
@@ -161,7 +157,7 @@
             padding: 6px 3px; 
             height: auto; 
             border: none; 
-            border-bottom: 1px solid #eeeeee; 
+            border-bottom: 1px solid #e0e0e0; 
         }
         
         .product-row:last-child td {
@@ -207,7 +203,14 @@
             font-weight: 700;
             padding: 8px 10px !important; 
         }
-        
+
+        /* Hilangkan border kolom DISC EXTRA di review */
+        .review-table th.disc-extra,
+        .review-table td.disc-extra {
+            border-right: none !important;
+            border-left: none !important;
+        }
+
         .KEM-TONE-EXT-row, .KEM-TONE-INT-row, .ULTRASHIELD-row, .SPECTRUM-row,
         .COLORTONE-EXT-row, .COLORTONE-INT-row, .SPECTRUM-SWOB-row, .SPECTRUM-ECO-row,
         .AEROSOL-row, .COLORANT-row, .ABC-row, .TAMITEX-CT-row, .TAMITEX-WF-row,
@@ -318,7 +321,6 @@
             padding-left: 10px !important;
         }
 
-        /* === BAGIAN TOTAL YANG DIRAPIHKAN === */
         .review-total-section {
             width: 100%;
             border-top: 2px solid #333;
@@ -360,21 +362,6 @@
         .review-grand-total-row .review-total-value {
             font-size: 18px;
             color: #000;
-        }
-
-        .diskon-input-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .diskon-input-container input {
-            width: 80px;
-            text-align: center;
-            font-size: 13px;
-            padding: 6px 8px;
-            border: 1px solid #999;
-            border-radius: 4px;
         }
 
         .review-notes-section {
@@ -495,29 +482,17 @@
                 <table class="review-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" colspan="2">Produk</th> 
-                            <th rowspan="2">DISC</th>
-                            <th rowspan="2">ORDER (QTY)</th>
-                            <th rowspan="2">TOTAL (RP)</th>
+                            <th colspan="2">Produk</th> 
+                            <th>DISC</th>
+                            <th>ORDER (QTY)</th>
+                            <th class="disc-extra">DISC EXTRA (%)</th>
+                            <th>TOTAL (RP)</th>
                         </tr>
                     </thead>
                     <tbody id="review-table-body"></tbody>
                 </table>
 
-                <!-- Bagian Total yang sudah dirapikan -->
                 <div class="review-total-section">
-                    <div class="review-total-row">
-                        <span class="review-total-label">SUB TOTAL</span>
-                        <span id="review-sub-total" class="review-total-value">0</span>
-                    </div>
-                    
-                    <div class="review-total-row">
-                        <span class="review-total-label">DISKON TAMBAHAN (%)</span>
-                        <div class="diskon-input-container">
-                            <input type="number" id="diskon-tambahan" min="0" max="100" value="0" step="0.5">
-                        </div>
-                    </div>
-                    
                     <div class="review-total-row review-grand-total-row">
                         <span class="review-total-label">GRAND TOTAL</span>
                         <span id="review-grand-total" class="review-total-value">0</span>
@@ -686,9 +661,6 @@
             } else {
                 row.style.display = ''; 
             }
-            if (row.classList.contains('product-group-header')) {
-                 row.style.display = '';
-            }
         } else {
             row.style.display = ''; 
         }
@@ -735,63 +707,23 @@
     }
 
     function toggleFilter() {
-        const allRows = document.querySelectorAll('#product-list > tr');
-        allRows.forEach(row => {
-            if (row.classList.contains('product-row')) {
-                const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
-                applyRowFilter(row, total);
-            }
-        });
-
         const filterActive = document.getElementById('filter-active').checked;
-        let visibleProductGroups = {}; 
-
-        document.querySelectorAll('.product-row').forEach(row => {
-            if (row.style.display !== 'none') {
-                visibleProductGroups[row.classList[1].replace('-row', '')] = true;
-            }
-        });
         
-        document.querySelectorAll('.product-group-header').forEach(headerRow => {
-            const productClass = headerRow.classList[1].replace('-header', '');
-            if (filterActive && !visibleProductGroups[productClass]) {
-                headerRow.style.display = 'none';
-            } else {
-                headerRow.style.display = '';
-            }
+        document.querySelectorAll('.product-row').forEach(row => {
+            const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
+            row.style.display = (filterActive && total === 0) ? 'none' : '';
+        });
+
+        document.querySelectorAll('.product-group-header').forEach(header => {
+            const groupName = header.classList[1].replace('-header', '');
+            const hasVisibleItem = Array.from(document.querySelectorAll(`.${groupName}-row`))
+                .some(row => row.style.display !== 'none');
+            header.style.display = (filterActive && !hasVisibleItem) ? 'none' : '';
         });
         
         calculateGrandTotal(); 
     }
     
-    let currentSubTotal = 0;
-
-    function updateGrandTotalWithDiskon() {
-        const diskonInput = document.getElementById('diskon-tambahan');
-        const subTotalEl = document.getElementById('review-sub-total');
-        const grandTotalEl = document.getElementById('review-grand-total');
-        
-        let diskonPersen = parseFloat(diskonInput.value) || 0;
-        if (diskonPersen > 100) diskonPersen = 100;
-        if (diskonPersen < 0) diskonPersen = 0;
-        
-        const diskonAmount = currentSubTotal * (diskonPersen / 100);
-        const grandTotal = Math.round(currentSubTotal - diskonAmount);
-        
-        subTotalEl.textContent = formatRupiah(currentSubTotal);
-        grandTotalEl.textContent = formatRupiah(grandTotal);
-    }
-
-    function setupDiskonTambahan() {
-        const diskonInput = document.getElementById('diskon-tambahan');
-        
-        diskonInput.addEventListener('input', () => {
-            if (parseFloat(diskonInput.value) > 100) diskonInput.value = 100;
-            if (parseFloat(diskonInput.value) < 0) diskonInput.value = 0;
-            updateGrandTotalWithDiskon();
-        });
-    }
-
     function showReviewPage() {
         const namaToko = document.getElementById('nama-toko').value.trim() || "-";
         const salesman = document.getElementById('salesman').value.trim() || "-";
@@ -802,14 +734,12 @@
         const tbody = document.getElementById('review-table-body');
         tbody.innerHTML = '';
         
-        let subTotal = 0;
         const rows = document.querySelectorAll('.product-row');
 
         rows.forEach(row => {
-            const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
+            const originalTotal = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
             
-            if (total > 0) {
-                subTotal += total;
+            if (originalTotal > 0) {
                 const dataIndex = row.dataset.index;
                 const productObj = productData[dataIndex];
                 
@@ -831,16 +761,19 @@
                     <td class="rev-col-product-cat">${productObj.kategori}</td>
                     <td class="rev-col-disc">${discVal.replace('.', ',')}%</td>
                     <td class="rev-col-qty">${qtyDisplay || ''}</td>
-                    <td class="rev-col-total">${formatRupiah(total)}</td>
+                    <td class="rev-col-disc disc-extra"><input type="number" min="0" max="100" value="0" step="0.5" class="review-additional-disc" style="width:60px; text-align:center; font-size:11px;"></td>
+                    <td class="rev-col-total" data-original="${originalTotal}">${formatRupiah(originalTotal)}</td>
                 `;
                 tbody.appendChild(tr);
+
+                const addDiscInput = tr.querySelector('.review-additional-disc');
+                addDiscInput.addEventListener('input', () => {
+                    updateRowTotal(tr);
+                });
             }
         });
 
-        currentSubTotal = subTotal;
-        
-        document.getElementById('diskon-tambahan').value = 0;
-        updateGrandTotalWithDiskon();
+        updateGrandTotal();
 
         document.getElementById('main-form').style.display = 'none';
         document.getElementById('review-page').style.display = 'block';
@@ -848,8 +781,26 @@
         const catatanArea = document.getElementById('catatan-so');
         catatanArea.style.height = 'auto';
         catatanArea.style.height = (catatanArea.scrollHeight) + 'px';
+    }
 
-        setupDiskonTambahan();
+    function updateRowTotal(tr) {
+        const originalTotal = parseFloat(tr.querySelector('.rev-col-total').dataset.original) || 0;
+        const addDiscPercent = parseFloat(tr.querySelector('.review-additional-disc').value) || 0;
+        
+        let newTotal = originalTotal * (1 - addDiscPercent / 100);
+        newTotal = Math.round(newTotal);
+        
+        tr.querySelector('.rev-col-total').textContent = formatRupiah(newTotal);
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        let total = 0;
+        document.querySelectorAll('#review-table-body .rev-col-total').forEach(td => {
+            const val = td.textContent.replace(/[^0-9]/g, '');
+            total += parseFloat(val) || 0;
+        });
+        document.getElementById('review-grand-total').textContent = formatRupiah(total);
     }
 
     function hideReviewPage() {
@@ -884,11 +835,7 @@
                 backgroundColor: '#ffffff',
                 useCORS: true,
                 width: captureElement.scrollWidth,
-                height: captureElement.scrollHeight,
-                windowWidth: captureElement.scrollWidth,
-                windowHeight: captureElement.scrollHeight,
-                x: 0,
-                y: 0
+                height: captureElement.scrollHeight
             });
 
             const imageURL = canvas.toDataURL('image/jpeg', 0.95);
