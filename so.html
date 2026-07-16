@@ -444,12 +444,7 @@
             </div>
         </div>
         
-        <div class="filter-bar">
-            <label for="filter-active">
-                <input type="checkbox" id="filter-active"> 
-                Tampilkan pesanan yang terisi
-            </label>
-            <button id="review-btn-trigger" disabled>Cetak</button>
+        <div class="filter-bar"><button id="review-btn-trigger" disabled>Cetak</button>
             <button class="btn-action" id="btn-export" style="background-color: #17a2b8; padding: 8px 14px; font-size: 12px;">Export</button>
             <button class="btn-action" id="btn-import" style="background-color: #6c757d; padding: 8px 14px; font-size: 12px;">Import</button>
         </div>
@@ -682,7 +677,7 @@
     }
 
     function applyRowFilter(row, total) {
-        const filterActive = document.getElementById('filter-active').checked;
+        const filterActive = false;
         if (filterActive && total === 0) {
             row.style.display = 'none';
         } else {
@@ -732,7 +727,7 @@
     }
 
     function toggleFilter() {
-        const filterActive = document.getElementById('filter-active').checked;
+        const filterActive = false;
         
         document.querySelectorAll('.product-row').forEach(row => {
             const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
@@ -961,7 +956,6 @@
             calculateRow(input.closest('.product-row'));
         });
         
-        document.getElementById('filter-active').addEventListener('change', toggleFilter);
         document.getElementById('review-btn-trigger').addEventListener('click', showReviewPage);
         document.getElementById('btn-edit').addEventListener('click', hideReviewPage);
         document.getElementById('btn-save-jpg').addEventListener('click', saveReviewAsJpg);
