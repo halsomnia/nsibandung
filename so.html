@@ -160,10 +160,6 @@
             border-bottom: 1px solid #e0e0e0; 
         }
         
-        .product-row:last-child td {
-            border-bottom: none; 
-        }
-        
         .text-left { text-align: left; padding-left: 5px; }
         .text-right { text-align: right; padding-right: 5px; font-weight: 500; }
 
@@ -197,18 +193,26 @@
 		
         .disc-input { max-width: 40px; }
         
-        .product-group-header td {
+        .product-group-header {
             background-color: var(--secondary-color) !important; 
             color: white;
             font-weight: 700;
-            padding: 8px 10px !important; 
+            padding: 10px 12px !important; 
+            cursor: pointer;
+            user-select: none;
         }
 
-        /* Hilangkan border kolom DISC EXTRA di review */
-        .review-table th.disc-extra,
-        .review-table td.disc-extra {
-            border-right: none !important;
-            border-left: none !important;
+        .product-group-header td::before {
+            content: "+ ";
+            margin-right: 8px;
+        }
+
+        .product-group-header:not(.collapsed) td::before {
+            content: "- ";
+        }
+
+        .product-row {
+            transition: all 0.2s;
         }
 
         .KEM-TONE-EXT-row, .KEM-TONE-INT-row, .ULTRASHIELD-row, .SPECTRUM-row,
@@ -445,7 +449,9 @@
                 <input type="checkbox" id="filter-active"> 
                 Tampilkan pesanan yang terisi
             </label>
-            <button id="review-btn-trigger" disabled>Simpan</button>
+            <button id="review-btn-trigger" disabled>Cetak</button>
+            <button class="btn-action" id="btn-export" style="background-color: #17a2b8; padding: 8px 14px; font-size: 12px;">Export</button>
+            <button class="btn-action" id="btn-import" style="background-color: #6c757d; padding: 8px 14px; font-size: 12px;">Import</button>
         </div>
         
         <div class="table-wrapper" id="table-wrapper">
@@ -625,14 +631,12 @@
             
             if (item.produk && item.produk !== lastProduct) {
                 lastProduct = item.produk;
-                const headerClassName = cssClassName + '-header';
-                html += `<tr class="product-group-header ${headerClassName}">`;
-                html += `<td colspan="5" class="group-label text-left">${item.produk}</td>`; 
-                html += `<td class="text-right">-</td>`;
+                html += `<tr class="product-group-header collapsed" data-group="${cssClassName}">`;
+                html += `<td colspan="6" class="group-label text-left">${item.produk}</td>`; 
                 html += `</tr>`;
             }
             
-            let rowHtml = `<tr class="product-row ${cssClassName}-row" data-index="${index}">`; 
+            let rowHtml = `<tr class="product-row ${cssClassName}-row" data-index="${index}" data-group="${cssClassName}">`; 
             rowHtml += `<td class="text-left row-category">${item.kategori}</td>`; 
             rowHtml += `<td><input type="number" min="0" max="100" value="${item.disc}" class="disc-input" step="0.5"></td>`;
             
@@ -649,20 +653,41 @@
         });
 
         document.getElementById('product-list').innerHTML = html;
+
+        // Default collapsed: sembunyikan semua product row
+        document.querySelectorAll('.product-row').forEach(row => {
+            row.style.display = 'none';
+        });
+
+        attachCollapseListeners();
         attachEventListeners();
     }
-    
+
+    function toggleGroup(header) {
+        const groupName = header.dataset.group;
+        const isCollapsed = header.classList.toggle('collapsed');
+        
+        document.querySelectorAll(`.product-row[data-group="${groupName}"]`).forEach(row => {
+            if(isCollapsed){
+            const hasValue=[...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i=>(parseFloat(i.value)||0)>0);
+            row.style.display=hasValue?'':'none';
+        }else{row.style.display='';}
+        });
+    }
+
+    function attachCollapseListeners() {
+        document.querySelectorAll('.product-group-header').forEach(header => {
+            header.addEventListener('click', () => toggleGroup(header));
+        });
+    }
+
     function applyRowFilter(row, total) {
         const filterActive = document.getElementById('filter-active').checked;
-        const isProductRow = row.classList.contains('product-row');
-        if (filterActive) {
-            if (isProductRow && total === 0) {
-                row.style.display = 'none'; 
-            } else {
-                row.style.display = ''; 
-            }
+        if (filterActive && total === 0) {
+            row.style.display = 'none';
         } else {
-            row.style.display = ''; 
+            const header=document.querySelector(`.product-group-header[data-group="${row.dataset.group}"]`);
+            const hasValue=[...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i=>(parseFloat(i.value)||0)>0); row.style.display = header && header.classList.contains('collapsed') ? (hasValue?'':'none') : '';
         }
     }
 
@@ -711,12 +736,12 @@
         
         document.querySelectorAll('.product-row').forEach(row => {
             const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
-            row.style.display = (filterActive && total === 0) ? 'none' : '';
+            if (filterActive && total===0){row.style.display='none';} else { const header=document.querySelector(`.product-group-header[data-group="${row.dataset.group}"]`); row.style.display=(header&&header.classList.contains('collapsed'))?'none':''; }
         });
 
         document.querySelectorAll('.product-group-header').forEach(header => {
-            const groupName = header.classList[1].replace('-header', '');
-            const hasVisibleItem = Array.from(document.querySelectorAll(`.${groupName}-row`))
+            const groupName = header.dataset.group;
+            const hasVisibleItem = Array.from(document.querySelectorAll(`.product-row[data-group="${groupName}"]`))
                 .some(row => row.style.display !== 'none');
             header.style.display = (filterActive && !hasVisibleItem) ? 'none' : '';
         });
@@ -857,6 +882,69 @@
         }
     }
 
+    function exportData() {
+        const data = {
+            namaToko: document.getElementById('nama-toko').value,
+            salesman: document.getElementById('salesman').value,
+            catatan: document.getElementById('catatan-so').value,
+            items: []
+        };
+
+        document.querySelectorAll('.product-row').forEach(row => {
+            const index = parseInt(row.dataset.index);
+            data.items.push({
+                index: index,
+                disc: row.querySelector('.disc-input').value,
+                kg: row.querySelector('.kg-qty').value,
+                gln: row.querySelector('.gln-qty').value,
+                pl: row.querySelector('.pl-qty').value
+            });
+        });
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SO_${(data.namaToko || 'Data').replace(/\s+/g, '_').toUpperCase()}_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    document.getElementById('nama-toko').value = imported.namaToko || '';
+                    document.getElementById('salesman').value = imported.salesman || '';
+                    document.getElementById('catatan-so').value = imported.catatan || '';
+
+                    imported.items.forEach(item => {
+                        const row = document.querySelector(`.product-row[data-index="${item.index}"]`);
+                        if (row) {
+                            if (item.disc !== undefined) row.querySelector('.disc-input').value = item.disc;
+                            if (item.kg !== undefined) row.querySelector('.kg-qty').value = item.kg;
+                            if (item.gln !== undefined) row.querySelector('.gln-qty').value = item.gln;
+                            if (item.pl !== undefined) row.querySelector('.pl-qty').value = item.pl;
+                            calculateRow(row);
+                        }
+                    });
+                    alert('✅ Data berhasil diimport!');
+                } catch (err) {
+                    alert('❌ File JSON tidak valid.');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
     function attachEventListeners() {
         const qtyInputs = document.querySelectorAll('.order-input');
         const discInputs = document.querySelectorAll('.disc-input');
@@ -877,6 +965,8 @@
         document.getElementById('review-btn-trigger').addEventListener('click', showReviewPage);
         document.getElementById('btn-edit').addEventListener('click', hideReviewPage);
         document.getElementById('btn-save-jpg').addEventListener('click', saveReviewAsJpg);
+        document.getElementById('btn-export').addEventListener('click', exportData);
+        document.getElementById('btn-import').addEventListener('click', importData);
 
         const catatanArea = document.getElementById('catatan-so');
         catatanArea.addEventListener('input', function() {
