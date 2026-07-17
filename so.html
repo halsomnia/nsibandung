@@ -444,9 +444,10 @@
             </div>
         </div>
         
-        <div class="filter-bar"><button id="review-btn-trigger" disabled>Cetak</button>
-            <button class="btn-action" id="btn-export" style="background-color: #17a2b8; padding: 8px 14px; font-size: 12px;">Export</button>
-            <button class="btn-action" id="btn-import" style="background-color: #6c757d; padding: 8px 14px; font-size: 12px;">Import</button>
+        <div class="filter-bar" style="justify-content:center; gap:10px;">
+            <button id="review-btn-trigger" style="padding:8px 16px;font-size:12px;border-radius:6px;" disabled>Cetak</button>
+            <button id="btn-export" style="padding:8px 16px;font-size:12px;border-radius:6px;background:#17a2b8;color:#fff;border:none;cursor:pointer;">Export</button>
+            <button id="btn-import" style="padding:8px 16px;font-size:12px;border-radius:6px;background:#6c757d;color:#fff;border:none;cursor:pointer;">Import</button>
         </div>
         
         <div class="table-wrapper" id="table-wrapper">
@@ -467,7 +468,7 @@
     <div id="review-page">
         <div class="review-scroll-wrapper">
             <div id="capture-area">
-                <div class="review-header-title">Sales Order</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="review-header-title">Sales Order</div><div id="review-date" style="font-size:13px;font-style:italic;margin-top:6px;"></div></div>
                 
                 <table class="review-info-table">
                     <tr>
@@ -750,6 +751,7 @@
 
         document.getElementById('review-toko').textContent = namaToko;
         document.getElementById('review-salesman').textContent = salesman;
+        const d=new Date(); const m=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']; document.getElementById('review-date').textContent=`${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
 
         const tbody = document.getElementById('review-table-body');
         tbody.innerHTML = '';
