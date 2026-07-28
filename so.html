@@ -1370,27 +1370,32 @@
 
     /* ================= EXIT CONFIRMATION (guard tombol back) ================= */
     let hasExited = false;
+    let guardDepth = 0; // jumlah history entry tambahan yang kita ganjal sendiri
 
     function setupExitGuard() {
         // Ganjal 1 entry history supaya tombol back device/browser tertangkap sebagai popstate,
         // bukan langsung keluar dari halaman.
         history.pushState({ soGuard: true }, '', location.href);
+        guardDepth++;
 
         window.addEventListener('popstate', function () {
             if (hasExited) return; // user sudah konfirmasi keluar, tidak perlu diganjal lagi
             // Ganjal lagi supaya tetap "terjebak" di halaman ini sampai user konfirmasi.
             history.pushState({ soGuard: true }, '', location.href);
+            guardDepth++;
             openSheet('sheet-exit');
         });
     }
 
     function attemptCloseTab() {
-        // Perilaku standar seperti web pada umumnya: cukup panggil window.close().
-        // Browser yang mengizinkan (misal window dibuka via window.open()) akan menutupnya;
-        // kalau tidak diizinkan, browser akan mengabaikannya begitu saja tanpa paksaan apa pun.
+        // Perilaku standar seperti web pada umumnya: coba window.close() dulu (berhasil
+        // kalau window ini dibuka lewat script). Kalau tidak diizinkan browser, kita
+        // "lepas" semua ganjalan history sekaligus supaya user langsung keluar dari
+        // halaman ini tanpa perlu menekan tombol back lagi.
         hasExited = true;
         closeSheet('sheet-exit');
         window.close();
+        history.go(-(guardDepth + 1));
     }
 
     document.addEventListener('DOMContentLoaded', () => {
