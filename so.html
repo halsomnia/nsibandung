@@ -1,519 +1,859 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Order</title> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sales Order</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --primary-color: #000000; 
-            --secondary-color: #000000; 
-            --accent-color: #FFFF00; 
-            --bg-light: #f4f7f6;      
-            --bg-card: #ffffff;       
-            --text-dark: #212121;     
-            --shadow-subtle: 0 4px 10px rgba(0, 0, 0, 0.08); 
-            --header-bg: var(--primary-color);
-        }
+<style>
+    :root {
+        --ink: #16181d;
+        --ink-soft: #565c66;
+        --ink-faint: #9298a3;
+        --line: #e7e8ec;
+        --line-soft: #f0f1f4;
+        --bg: #f2f3f5;
+        --surface: #ffffff;
+        --brand: #14161a;
+        --accent: #ffcc33;
+        --accent-ink: #4d3c00;
+        --good: #1c9a5b;
+        --good-soft: #e7f7ef;
+        --danger: #e0433c;
+        --radius-lg: 18px;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --shadow-sm: 0 1px 2px rgba(20,22,26,0.06);
+        --shadow-md: 0 8px 24px -8px rgba(20,22,26,0.18);
+        --safe-b: env(safe-area-inset-bottom, 0px);
+    }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-light);
-            display: flex;
-            justify-content: center;
-            padding: 10px; 
-            margin: 0;
-            font-size: 12px; 
-            -webkit-text-size-adjust: 100%; 
-            color: var(--text-dark);
-        }
+    * { box-sizing: border-box; }
 
-        .sales-order-container {
-            width: 100%;
-            max-width: 900px; 
-            background: var(--bg-card);
-            box-shadow: var(--shadow-subtle); 
-            border-radius: 12px; 
-            overflow: hidden; 
-        }
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+    }
 
-        h2 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px; 
-            background-color: var(--header-bg); 
-            color: white;
-            margin: 0;
-            font-size: 18px; 
-            letter-spacing: 1px;
-        }
+    body {
+        font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--ink);
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        #grand-total-display {
-            color: var(--accent-color);
-            font-weight: 700;
-        }
+    input, textarea, button {
+        font-family: inherit;
+    }
 
-        .header-info {
-            padding: 12px; 
-            background-color: var(--bg-card); 
-            border-bottom: 1px solid #e0e0e0; 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-        }
+    .app-shell {
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        min-height: 100vh;
+        background: var(--bg);
+        position: relative;
+        padding-bottom: calc(84px + var(--safe-b));
+    }
 
-        .info-row {
-            display: flex;
-            align-items: center;
-            flex: 1 1 100%; 
-            font-size: 12px;
-        }
-        @media (min-width: 500px) {
-             .info-row {
-                flex: 1 1 45%; 
-            }
-        }
+    /* ---------- TOP BAR ---------- */
+    .top-bar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: var(--brand);
+        color: #fff;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .top-bar h1 {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 0.2px;
+    }
+    .top-bar-actions {
+        display: flex;
+        gap: 6px;
+    }
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: none;
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 17px;
+        transition: background 0.15s ease;
+        flex-shrink: 0;
+    }
+    .icon-btn:active { background: rgba(255,255,255,0.22); }
 
-        .info-row label {
-            font-weight: 600;
-            min-width: 70px; 
-            color: var(--text-dark);
-            white-space: nowrap; 
-        }
+    /* ---------- TOKO & SALESMAN (satu baris) ---------- */
+    .toko-sales-row {
+        padding: 12px 16px 4px;
+        display: flex;
+        gap: 8px;
+    }
+    .field-inline {
+        flex: 1 1 0;
+        min-width: 0;
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 7px 11px;
+        box-shadow: var(--shadow-sm);
+    }
+    .field-inline label {
+        display: block;
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--ink-faint);
+        font-weight: 700;
+        margin-bottom: 1px;
+    }
+    .field-inline input[type="text"] {
+        width: 100%;
+        border: none;
+        padding: 1px 0 0;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+        background: transparent;
+        outline: none;
+    }
+    .field-inline input[type="text"]::placeholder {
+        color: var(--ink-faint);
+        font-weight: 400;
+    }
+    .field-inline:focus-within {
+        box-shadow: 0 0 0 1.5px var(--ink);
+    }
 
-        .info-row input[type="text"] {
-            flex-grow: 1; 
-            padding: 8px 10px; 
-            border: 1px solid #e0e0e0;
-            border-radius: 6px; 
-            font-size: 12px; 
-            transition: border-color 0.2s;
-        }
-        .info-row input[type="text"]:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
+    /* ---------- PRODUCT LIST ---------- */
+    .product-list-wrap {
+        padding: 8px 16px 4px;
+    }
+    #product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-        .filter-bar {
-            padding: 10px 12px; 
-            font-size: 11px; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px; 
-        }
-        
-        #review-btn-trigger {
-            padding: 8px 16px; 
-            font-size: 12px; 
-            border-radius: 6px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #review-btn-trigger:disabled {
-            background-color: #ced4da; 
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
+    .product-group {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
 
-        .table-wrapper {
-            max-height: 75vh; 
-            overflow-y: auto; 
-            border-radius: 0 0 12px 12px; 
-        }
+    .product-group-header {
+        background: var(--brand);
+        color: #fff;
+        font-weight: 700;
+        font-size: 13.5px;
+        padding: 13px 14px;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        letter-spacing: 0.2px;
+    }
+    .product-group-header .chevron {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        font-size: 11px;
+        opacity: 0.75;
+    }
+    .product-group-header:not(.collapsed) .chevron {
+        transform: rotate(180deg);
+    }
+    .product-group-header .group-badge {
+        font-size: 10.5px;
+        font-weight: 600;
+        background: rgba(255,255,255,0.14);
+        padding: 2px 7px;
+        border-radius: 999px;
+        margin-right: auto;
+        margin-left: 8px;
+        opacity: 0.85;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: separate; 
-            border-spacing: 0; 
-            table-layout: fixed; 
-            font-size: 11px; 
-        }
+    .group-rows {
+        display: flex;
+        flex-direction: column;
+    }
 
-        thead {
-            background-color: var(--primary-color);
-            color: white;
-            position: sticky; 
-            top: 0;
-            z-index: 10;
-        }
-        
-        thead th {
-            font-weight: 600;
-            padding: 8px 3px; 
-            border: none; 
-            border-bottom: 1px solid #444444; 
-        }
+    .product-row {
+        padding: 7px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .product-row:nth-child(even) {
+        background: rgba(20,22,26,0.02);
+    }
 
-        th, td {
-            padding: 6px 3px; 
-            height: auto; 
-            border: none; 
-            border-bottom: 1px solid #e0e0e0; 
-        }
-        
-        .text-left { text-align: left; padding-left: 5px; }
-        .text-right { text-align: right; padding-right: 5px; font-weight: 500; }
+    .row-category {
+        flex: 0 0 62px;
+        max-width: 62px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--ink);
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    /* row-total kept in DOM only to feed grand-total calculation; per-row total no longer shown (lihat halaman review untuk rincian) */
+    .row-total {
+        display: none;
+    }
 
-        .order-input, .disc-input {
-            width: 100%; 
-            max-width: 45px; 
-            padding: 3px 22px 3px 3px; 
-            font-size: 11px; 
-            height: 24px; 
-            margin: auto; 
-            display: block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .order-input::placeholder {
-            color: #888;
-            opacity: 1;
-            font-size: 10px;
-        }
-		
-		.order-input:disabled {
-			border: none;
-			background: transparent;
-		}
-        
-        .order-input:disabled::placeholder {
-            color: transparent;
-        }
-		
-        .disc-input { max-width: 40px; }
-        
-        .product-group-header {
-            background-color: var(--secondary-color) !important; 
-            color: white;
-            font-weight: 700;
-            padding: 10px 12px !important; 
-            cursor: pointer;
-            user-select: none;
-        }
+    .row-inputs {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1 1 0;
+        min-width: 0;
+    }
 
-        .product-group-header td::before {
-            content: "+ ";
-            margin-right: 8px;
-        }
+    /* ---- Disc field: "Disc [input] %" ---- */
+    .disc-field {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        height: 30px;
+        padding: 0 7px;
+        background: #fffdf3;
+        border-radius: var(--radius-sm);
+        box-sizing: border-box;
+    }
+    .disc-field .disc-label,
+    .disc-field .disc-suffix {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--accent-ink);
+        white-space: nowrap;
+        user-select: none;
+    }
+    .disc-input {
+        width: 28px;
+        height: 100%;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--ink);
+        padding: 0;
+        min-width: 0;
+        -moz-appearance: textfield;
+        outline: none;
+    }
+    .disc-field:focus-within {
+        box-shadow: 0 0 0 1.5px var(--ink);
+    }
 
-        .product-group-header:not(.collapsed) td::before {
-            content: "- ";
-        }
+    /* ---- Qty: always 3 fixed-width columns, unused ones left blank but keep alignment ---- */
+    .qty-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    .qty-slot { min-width: 0; }
 
-        .product-row {
-            transition: all 0.2s;
-        }
 
-        .KEM-TONE-EXT-row, .KEM-TONE-INT-row, .ULTRASHIELD-row, .SPECTRUM-row,
-        .COLORTONE-EXT-row, .COLORTONE-INT-row, .SPECTRUM-SWOB-row, .SPECTRUM-ECO-row,
-        .AEROSOL-row, .COLORANT-row, .ABC-row, .TAMITEX-CT-row, .TAMITEX-WF-row,
-        .TAMITEX-CG-row, .VINOTEX-CT-row, .VINOTEX-WF-row, .APOLLO-row,
-        .SPECTRUM-GRANITE-row, .SPECTRUM-FLOORKOTE-row { background-color: #f9f9f9; } 
+    .order-input {
+        width: 100%;
+        padding: 5px 2px;
+        font-size: 12px;
+        height: 30px;
+        border: none;
+        border-radius: var(--radius-sm);
+        text-align: center;
+        color: var(--ink);
+        background: var(--bg);
+        min-width: 0;
+        -moz-appearance: textfield;
+    }
+    .order-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 1.5px var(--ink);
+    }
+    .order-input::placeholder { color: #b7bcc5; font-size: 10px; }
 
-        #review-page {
-            display: none; 
-            background-color: white;
-        }
+    /* hide number spinners for cleaner look */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-        #capture-area {
-            background-color: white;
-            padding: 38px;
-            color: var(--text-dark);
-            width: fit-content;
-            min-width: 100%;
-            box-sizing: border-box;
-        }
-        
-        .review-header-title {
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-        
-        .review-info-table {
-            width: 100%;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-        .review-info-table td {
-            padding: 2px 0;
-            border: none;
-        }
-        .review-label {
-            width: 80px;
-            color: black;
-        }
-        .review-value {
-            font-weight: bold;
-            text-transform: uppercase;
-            color: black;
-        }
+    .group-empty-note {
+        padding: 16px 14px;
+        font-size: 12px;
+        color: var(--ink-faint);
+        text-align: center;
+    }
 
-        .review-scroll-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
+    /* ---------- BOTTOM BAR ---------- */
+    .bottom-bar {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 40;
+        display: flex;
+        justify-content: center;
+    }
+    .bottom-bar-inner {
+        width: 100%;
+        max-width: 640px;
+        background: var(--surface);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -4px 16px rgba(20,22,26,0.08);
+        padding: 10px 16px calc(10px + var(--safe-b));
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .bottom-total {
+        flex: 1;
+        min-width: 0;
+    }
+    .bottom-total .bt-label {
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--ink-faint);
+        font-weight: 700;
+    }
+    #grand-total-display {
+        font-size: 19px;
+        font-weight: 800;
+        color: var(--ink);
+        display: block;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .btn-primary {
+        padding: 13px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: var(--radius-md);
+        background: var(--accent);
+        color: var(--accent-ink);
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px -3px rgba(255,204,51,0.6);
+    }
+    .btn-primary:disabled {
+        background: var(--line);
+        color: var(--ink-faint);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 
-        .review-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            table-layout: auto; 
-            color: black;
-            margin-bottom: 15px;
-        }
+    /* ---------- MODAL / SHEET ---------- */
+    .sheet-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15,16,20,0.45);
+        z-index: 60;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .sheet-overlay.open { display: flex; }
+    .sheet {
+        width: 100%;
+        max-width: 640px;
+        background: var(--surface);
+        border-radius: 20px 20px 0 0;
+        padding: 8px 20px calc(22px + var(--safe-b));
+        box-shadow: var(--shadow-md);
+        animation: sheet-up 0.22s ease;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    @keyframes sheet-up {
+        from { transform: translateY(24px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .sheet-handle {
+        width: 36px;
+        height: 4px;
+        background: var(--line);
+        border-radius: 999px;
+        margin: 10px auto 14px;
+    }
+    .sheet-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--ink);
+    }
+    .sheet-subtitle {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        margin-bottom: 18px;
+    }
+    .field-block {
+        margin-bottom: 14px;
+    }
+    .field-block label {
+        display: block;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+    }
+    .field-block input[type="text"] {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--line);
+        font-size: 14px;
+        color: var(--ink);
+        background: var(--bg);
+    }
+    .field-block input[type="text"]:focus {
+        border-color: var(--ink);
+        outline: none;
+        background: var(--surface);
+    }
+    .sheet-btn {
+        width: 100%;
+        padding: 13px;
+        border-radius: var(--radius-md);
+        border: none;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 4px;
+    }
+    .sheet-btn.primary { background: var(--ink); color: #fff; }
+    .sheet-btn.ghost { background: var(--line-soft); color: var(--ink); margin-top: 8px; }
+    .sheet-btn.danger-ghost { background: #fdecea; color: var(--danger); margin-top: 8px; }
 
-        .review-table th {
-            background-color: black; 
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            border: none;
-            border-bottom: 1px solid white;
-            padding: 8px 5px;
-            vertical-align: middle;
-            text-transform: uppercase;
-        }
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 13px 4px;
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        text-align: left;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item .mi-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--line-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .menu-item.danger { color: var(--danger); }
+    .menu-item.danger .mi-icon { background: #fdecea; }
 
-        .review-table td {
-            border: none; 
-            border-bottom: 1px solid #e0e0e0; 
-            padding: 8px 5px;
-            color: black;
-        }
-        
-        .rev-col-product-group { 
-            text-align: left; 
-            font-weight: normal;
-            min-width: 90px;
-            white-space: normal;
-        }
-        .rev-col-product-cat { 
-            text-align: left; 
-            font-weight: normal;
-            min-width: 110px;
-            white-space: normal;
-        }
-        .rev-col-disc { 
-            text-align: center; 
-            min-width: 45px;
-            white-space: normal;
-        }
-        .rev-col-qty { 
-            text-align: center;           
-            min-width: 120px;           
-            white-space: normal;
-            padding-left: 8px;          
-        }
-        .rev-col-total { 
-            text-align: right; 
-            width: auto;
-            white-space: nowrap;
-            font-weight: bold;
-            padding-left: 10px !important;
-        }
+    /* ---------- REVIEW PAGE ---------- */
+    #review-page { display: none; background: var(--bg); min-height: 100vh; }
 
-        .review-total-section {
-            width: 100%;
-            border-top: 2px solid #333;
-            padding-top: 12px;
-            margin-top: 10px;
-        }
+    .review-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: var(--brand);
+        color: #fff;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .review-topbar button {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: #fff;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .review-topbar h2 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0;
+    }
 
-        .review-total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            font-size: 13px;
-        }
+    #capture-area {
+        background: #ffffff;
+        padding: 22px 24px 28px;
+        color: #111;
+        min-width: 568px;
+        box-sizing: border-box;
+    }
 
-        .review-total-label {
-            font-weight: 600;
-            color: #222;
-        }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2px;
+    }
+    .review-header-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #111;
+        letter-spacing: -0.2px;
+        flex: 1;
+        min-width: 0;
+    }
+    #review-date {
+        font-size: 12px;
+        color: #555;
+        margin-top: 2px;
+        text-align: right;
+        white-space: nowrap;
+        flex-shrink: 0;
+        align-self: flex-start;
+        padding-left: 12px;
+    }
 
-        .review-total-value {
-            font-weight: bold;
-            text-align: right;
-            min-width: 140px;
-        }
+    .review-info-table {
+        width: 100%;
+        margin: 14px 0 16px;
+        font-size: 13px;
+        border-collapse: collapse;
+    }
+    .review-info-table td { padding: 2px 0; border: none; color: #111; }
+    .review-label { width: 78px; color: #666; font-weight: 500; }
+    .review-value { font-weight: 700; text-transform: uppercase; color: #111; }
 
-        .review-grand-total-row {
-            background-color: #f8f8f8;
-            padding: 12px 0;
-            border-top: 2px solid #000;
-            margin-top: 8px;
-        }
+    .review-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
-        .review-grand-total-row .review-total-label {
-            font-size: 16px;
-            font-weight: 700;
-        }
+    .review-table {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        font-size: 11px;
+        color: #111;
+        margin-bottom: 12px;
+        table-layout: auto;
+    }
+    .review-table th {
+        background: #111318;
+        color: #fff;
+        font-weight: 700;
+        text-align: center;
+        padding: 8px 7px;
+        text-transform: uppercase;
+        letter-spacing: 0.25px;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+    .review-table th:first-child { text-align: left; padding-left: 10px; }
+    .review-table th:last-child { text-align: right; padding-right: 10px; }
+    .review-table td {
+        border-bottom: 1px solid #e8e8e8;
+        padding: 7px 7px;
+        color: #111;
+        vertical-align: middle;
+    }
+    .review-table tr:last-child td { border-bottom: none; }
 
-        .review-grand-total-row .review-total-value {
-            font-size: 18px;
-            color: #000;
-        }
+    .rev-col-product {
+        text-align: left;
+        font-weight: 600;
+        white-space: nowrap;
+        min-width: 160px;
+        max-width: 220px;
+        padding-left: 10px !important;
+    }
+    .rev-col-product .prod-name { color: #111; }
+    .rev-col-product .prod-cat {
+        color: #666;
+        font-weight: 500;
+        font-size: 10.5px;
+    }
+    .rev-col-disc { text-align: center; white-space: nowrap; min-width: 42px; }
+    .rev-col-qty { text-align: center; white-space: nowrap; min-width: 110px; }
+    .rev-col-total { text-align: right; white-space: nowrap; font-weight: 700; min-width: 80px; padding-right: 10px !important; }
 
-        .review-notes-section {
-            margin-top: 20px;
-            padding-top: 5px;
-            width: 100%;
-        }
-        .review-notes-section label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 12px;
-            color: black;
-        }
-        .review-notes-section textarea {
-            width: 100%;
-            min-height: 40px;
-            padding: 8px 0;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            font-family: inherit;
-            font-size: 12px;
-            resize: none;
-            box-sizing: border-box;
-            line-height: 1.4;
-            color: black;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow: hidden;
-        }
+    .review-total-section {
+        border-top: 2px solid #111;
+        padding-top: 12px;
+        margin-top: 6px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .review-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .review-grand-total-row {
+        background: #f4f4f5;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-top: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .review-grand-total-row .review-total-label {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+    }
+    .review-grand-total-row .review-total-value {
+        font-size: 18px;
+        font-weight: 800;
+        color: #111;
+        text-align: right;
+        margin-left: auto;
+        white-space: nowrap;
+    }
 
-        .review-actions {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding-bottom: 20px;
-        }
+    .review-notes-section { margin-top: 16px; }
+    .review-notes-section label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 5px;
+        font-size: 11.5px;
+        color: #111;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .review-notes-section textarea {
+        width: 100%;
+        min-height: 36px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 12.5px;
+        resize: none;
+        line-height: 1.45;
+        color: #111;
+    }
 
-        .btn-action {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-            width: 45%; 
-            max-width: 150px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+    .review-actions {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 16px;
+        display: flex;
+        gap: 10px;
+    }
+    .btn-action {
+        flex: 1;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 700;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: #fff;
+    }
+    .btn-edit { background: #fff; color: var(--ink); border: 1px solid var(--line) !important; }
+    .btn-save-jpg { background: var(--good); }
 
-        .btn-edit { background-color: #ff9800; } 
-        .btn-save-jpg { background-color: #28a745; } 
-    </style>
+    .disc-extra-cell {
+        min-width: 64px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .review-additional-disc {
+        width: 50px;
+        height: 28px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0;
+        border: 1px solid #c8c8c8;
+        border-radius: 6px;
+        background: #fffdf3;
+        display: block;
+        margin: 0 auto;
+        box-sizing: border-box;
+        color: #111;
+        -moz-appearance: textfield;
+    }
+    .review-additional-disc:focus {
+        outline: none;
+        border-color: #888;
+    }
+
+</style>
 </head>
 <body>
 
-<div class="sales-order-container">
-    
-    <div id="main-form">
-        <h2>
-            <span>Sales Order</span>
+<div class="app-shell" id="main-form">
+
+    <div class="top-bar">
+        <h1>Sales Order</h1>
+        <div class="top-bar-actions">
+            <button class="icon-btn" id="btn-open-menu" aria-label="Menu" title="Menu">&#9776;</button>
+        </div>
+    </div>
+
+    <div class="toko-sales-row">
+        <div class="field-inline">
+            <label for="nama-toko">Toko</label>
+            <input type="text" id="nama-toko" placeholder="Nama & alamat toko">
+        </div>
+        <div class="field-inline">
+            <label for="salesman">Salesman</label>
+            <input type="text" id="salesman" placeholder="Nama salesman">
+        </div>
+    </div>
+
+    <div class="product-list-wrap">
+        <div id="product-list"></div>
+    </div>
+
+</div>
+
+<div class="bottom-bar">
+    <div class="bottom-bar-inner">
+        <div class="bottom-total">
+            <span class="bt-label">Total Order</span>
             <span id="grand-total-display">0</span>
-        </h2> 
-        
-        <div class="header-info">
-            <div class="info-row">
-                <label for="nama-toko">Toko:</label>
-                <input type="text" id="nama-toko" placeholder="Nama dan Alamat Toko">
-            </div>
-            <div class="info-row">
-                <label for="salesman">Salesman:</label>
-                <input type="text" id="salesman" placeholder="Nama Salesman">
-            </div>
         </div>
-        
-        <div class="filter-bar" style="justify-content:center; gap:10px;">
-            <button id="review-btn-trigger" style="padding:8px 16px;font-size:12px;border-radius:6px;" disabled>Cetak</button>
-            <button id="btn-export" style="padding:8px 16px;font-size:12px;border-radius:6px;background:#17a2b8;color:#fff;border:none;cursor:pointer;">Export</button>
-            <button id="btn-import" style="padding:8px 16px;font-size:12px;border-radius:6px;background:#6c757d;color:#fff;border:none;cursor:pointer;">Import</button>
-        </div>
-        
-        <div class="table-wrapper" id="table-wrapper">
-            <table>
+        <button id="review-btn-trigger" class="btn-primary" disabled>Lihat &amp; Cetak</button>
+    </div>
+</div>
+
+<!-- ============ MENU SHEET ============ -->
+<div class="sheet-overlay" id="sheet-menu">
+    <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Menu</div>
+        <div class="sheet-subtitle">Kelola data Sales Order ini.</div>
+
+        <button type="button" class="menu-item" id="btn-export">
+            <span class="mi-icon">&#128190;</span> Export Data (.json)
+        </button>
+        <button type="button" class="menu-item" id="btn-import">
+            <span class="mi-icon">&#128193;</span> Import Data (.json)
+        </button>
+        <button type="button" class="menu-item danger" id="btn-reset-all">
+            <span class="mi-icon">&#128465;</span> Reset Semua Input
+        </button>
+
+        <button type="button" class="sheet-btn ghost" id="btn-close-menu">Tutup</button>
+    </div>
+</div>
+
+<!-- ============ EXIT CONFIRM SHEET ============ -->
+<div class="sheet-overlay" id="sheet-exit">
+    <div class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Yakin mau keluar?</div>
+        <div class="sheet-subtitle">Perubahan yang belum disimpan bisa hilang jika kamu keluar dari halaman ini.</div>
+
+        <button type="button" class="sheet-btn danger-ghost" id="btn-exit-yes">Ya, Keluar</button>
+        <button type="button" class="sheet-btn primary" id="btn-exit-no">Tidak</button>
+    </div>
+</div>
+
+<!-- ============ REVIEW PAGE ============ -->
+<div id="review-page">
+    <div class="review-topbar">
+        <button id="btn-edit" aria-label="Kembali">&#8592;</button>
+        <h2>Preview Sales Order</h2>
+    </div>
+
+    <div class="review-scroll-wrapper">
+        <div id="capture-area">
+            <div class="review-header">
+                <div class="review-header-title">Sales Order</div>
+                <div id="review-date"></div>
+            </div>
+
+            <table class="review-info-table">
+                <tr>
+                    <td class="review-label">Toko</td>
+                    <td class="review-value" id="review-toko">-</td>
+                </tr>
+                <tr>
+                    <td class="review-label">Salesman</td>
+                    <td class="review-value" id="review-salesman">-</td>
+                </tr>
+            </table>
+
+            <table class="review-table">
                 <thead>
                     <tr>
-                        <th class="text-left">PRODUK</th>
-                        <th>DISC</th>
-                        <th colspan="3">ORDER (QTY)</th>
-                        <th>TOTAL (RP)</th>
+                        <th>Produk</th>
+                        <th>Disc</th>
+                        <th>Order (Qty)</th>
+                        <th class="disc-extra">Disc Extra</th>
+                        <th>Total (Rp)</th>
                     </tr>
                 </thead>
-                <tbody id="product-list"></tbody>
+                <tbody id="review-table-body"></tbody>
             </table>
-        </div>
-    </div>
 
-    <div id="review-page">
-        <div class="review-scroll-wrapper">
-            <div id="capture-area">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="review-header-title">Sales Order</div><div id="review-date" style="font-size:13px;font-style:italic;margin-top:6px;"></div></div>
-                
-                <table class="review-info-table">
-                    <tr>
-                        <td class="review-label">Toko</td>
-                        <td class="review-value" id="review-toko">-</td>
-                    </tr>
-                    <tr>
-                        <td class="review-label">Salesman</td>
-                        <td class="review-value" id="review-salesman">-</td>
-                    </tr>
-                </table>
-
-                <table class="review-table">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Produk</th> 
-                            <th>DISC</th>
-                            <th>ORDER (QTY)</th>
-                            <th class="disc-extra">DISC EXTRA</th>
-                            <th>TOTAL (RP)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="review-table-body"></tbody>
-                </table>
-
-                <div class="review-total-section">
-                    <div class="review-total-row review-grand-total-row">
-                        <span class="review-total-label">GRAND TOTAL</span>
-                        <span id="review-grand-total" class="review-total-value">0</span>
-                    </div>
-                </div>
-
-                <div class="review-notes-section">
-                    <label for="catatan-so">Catatan:</label>
-                    <textarea id="catatan-so" placeholder="Tulis kode warna, voucher, atau apapun di sini..." rows="3"></textarea>
+            <div class="review-total-section">
+                <div class="review-total-row review-grand-total-row">
+                    <span class="review-total-label">GRAND TOTAL</span>
+                    <span id="review-grand-total" class="review-total-value">0</span>
                 </div>
             </div>
-        </div>
 
-        <div class="review-actions">
-            <button class="btn-action btn-edit" id="btn-edit">Edit</button>
-            <button class="btn-action btn-save-jpg" id="btn-save-jpg">Simpan JPG</button>
+            <div class="review-notes-section">
+                <label for="catatan-so">Catatan</label>
+                <textarea id="catatan-so" placeholder="Tulis kode warna, voucher, atau apapun di sini..." rows="3"></textarea>
+            </div>
         </div>
     </div>
 
+    <div class="review-actions">
+        <button class="btn-action btn-edit" id="btn-edit-2">Edit</button>
+        <button class="btn-action btn-save-jpg" id="btn-save-jpg">Simpan JPG</button>
+    </div>
 </div>
 
 <script>
@@ -524,7 +864,7 @@
         { produk: "KEM-TONE EXT", kategori: "UWE", hargaKg: 0, hargaGln: 546100, hargaPl: 2716900, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 505500, hargaPl: 2354600, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 445400, hargaPl: 2063000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "KEM-TONE INT", kategori: "WHITE INT", hargaKg: 0, hargaGln: 420200, hargaPl: 2006600, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE INT", kategori: "ALKALI", hargaKg: 0, hargaGln: 361200, hargaPl: 1666100, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE INT", kategori: "TBA", hargaKg: 0, hargaGln: 373900, hargaPl: 1792000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
@@ -539,13 +879,13 @@
         { produk: "KEM-TONE INT", kategori: "PAINT REMOVER (SOLVENT)", hargaKg: 97700, hargaGln: 330300, hargaPl: 1605800, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE INT", kategori: "TECHNIQUE GLAZE", hargaKg: 78500, hargaGln: 280200, hargaPl: 0, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "KEM-TONE INT", kategori: "RUSH REMOVER", hargaKg: 0, hargaGln: 299400, hargaPl: 1128000, disc: 15, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "ULTRASHIELD", kategori: "WHITE", hargaKg: 0, hargaGln: 428600, hargaPl: 2042300, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "ULTRASHIELD", kategori: "ULTRA PRIMER", hargaKg: 0, hargaGln: 452900, hargaPl: 2156500, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "ULTRASHIELD", kategori: "TBM", hargaKg: 0, hargaGln: 417300, hargaPl: 1964100, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "ULTRASHIELD", kategori: "DBO", hargaKg: 0, hargaGln: 362400, hargaPl: 1698600, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "ULTRASHIELD", kategori: "NBT", hargaKg: 0, hargaGln: 355800, hargaPl: 1595900, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "SPECTRUM", kategori: "ALKALI", hargaKg: 0, hargaGln: 225900, hargaPl: 1032800, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM", kategori: "CAT GYPSUM", hargaKg: 0, hargaGln: 205400, hargaPl: 977600, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM", kategori: "WHITE", hargaKg: 0, hargaGln: 231000, hargaPl: 1107200, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
@@ -553,47 +893,47 @@
         { produk: "SPECTRUM", kategori: "DBC", hargaKg: 56400, hargaGln: 192400, hargaPl: 855700, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM", kategori: "NBD", hargaKg: 51200, hargaGln: 168900, hargaPl: 772400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM", kategori: "YB", hargaKg: 53800, hargaGln: 187200, hargaPl: 831400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "COLORTONE EXT", kategori: "WHITE EXT", hargaKg: 0, hargaGln: 240400, hargaPl: 1094500, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE EXT", kategori: "TBM", hargaKg: 0, hargaGln: 193500, hargaPl: 928000, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE EXT", kategori: "DBO", hargaKg: 0, hargaGln: 171000, hargaPl: 801900, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE EXT", kategori: "NBT", hargaKg: 0, hargaGln: 158900, hargaPl: 743800, disc: 12.5, placeholderKg: "KG", placeholderGln: "3,5L", placeholderPl: "PL" },
-		
+
         { produk: "COLORTONE INT", kategori: "ALKALI", hargaKg: 115000, hargaGln: 160000, hargaPl: 776600, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE INT", kategori: "PUTIH INT", hargaKg: 115000, hargaGln: 160000, hargaPl: 776600, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE INT", kategori: "TBA", hargaKg: 106500, hargaGln: 145500, hargaPl: 667000, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE INT", kategori: "DBC", hargaKg: 87600, hargaGln: 117200, hargaPl: 512500, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
         { produk: "COLORTONE INT", kategori: "NBD", hargaKg: 75500, hargaGln: 101100, hargaPl: 458400, disc: 12.5, placeholderKg: "2,5L", placeholderGln: "3,5L", placeholderPl: "PL" },
-		
+
         { produk: "SPECTRUM SW08", kategori: "ABU/PUTIH/OUTER SPACE", hargaKg: 71500, hargaGln: 270000, hargaPl: 1254000, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM SW08", kategori: "MUDA", hargaKg: 62400, hargaGln: 224200, hargaPl: 1116000, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM SW08", kategori: "NB", hargaKg: 56100, hargaGln: 198200, hargaPl: 937900, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "SPECTRUM ECO", kategori: "ALKALI", hargaKg: 0, hargaGln: 170900, hargaPl: 809400, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "SPECTRUM ECO", kategori: "PUTIH & READY MIX", hargaKg: 0, hargaGln: 194500, hargaPl: 883700, disc: 12.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "AEROSOL", kategori: "AEROSOL", hargaKg: 19000, hargaGln: 29700, hargaPl: 0, disc: 10.0, placeholderKg: "150CC", placeholderGln: "300CC", placeholderPl: "PL" },
-		
-        { produk: "COLORANT", kategori: "RED", hargaKg: 0, hargaGln: 408800, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RED OXIDE", hargaKg: 0, hargaGln: 250000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 270300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "YELLOW OXIDE", hargaKg: 0, hargaGln: 226900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "BLUE", hargaKg: 0, hargaGln: 182000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 447400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "VIOLET", hargaKg: 0, hargaGln: 236300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RAW UMBER", hargaKg: 0, hargaGln: 121000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "MAGENTA", hargaKg: 0, hargaGln: 310900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "BLACK", hargaKg: 0, hargaGln: 177900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "WHITE", hargaKg: 0, hargaGln: 293400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "RED ORANGE", hargaKg: 0, hargaGln: 686700, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "COLORANT", kategori: "PREMIUM YELLOW", hargaKg: 0, hargaGln: 1621300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
+        { produk: "COLORANT", kategori: "RED", hargaKg: 0, hargaGln: 408800, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RED OXIDE", hargaKg: 0, hargaGln: 250000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "YELLOW", hargaKg: 0, hargaGln: 270300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "YELLOW OXIDE", hargaKg: 0, hargaGln: 226900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "BLUE", hargaKg: 0, hargaGln: 182000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "GREEN", hargaKg: 0, hargaGln: 447400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "VIOLET", hargaKg: 0, hargaGln: 236300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RAW UMBER", hargaKg: 0, hargaGln: 121000, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "MAGENTA", hargaKg: 0, hargaGln: 310900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "BLACK", hargaKg: 0, hargaGln: 177900, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "WHITE", hargaKg: 0, hargaGln: 293400, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "RED ORANGE", hargaKg: 0, hargaGln: 686700, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+        { produk: "COLORANT", kategori: "PREMIUM YELLOW", hargaKg: 0, hargaGln: 1621300, hargaPl: 0, disc: 14.5, placeholderKg: "KG", placeholderGln: "PCH", placeholderPl: "PL" },
+
         { produk: "ABC", kategori: "STD", hargaKg: 0, hargaGln: 308700, hargaPl: 1621800, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-        { produk: "ABC", kategori: "STD", hargaKg: 47900, hargaGln: 80100, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" }, 
+        { produk: "ABC", kategori: "STD", hargaKg: 47900, hargaGln: 80100, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
         { produk: "ABC", kategori: "SILVER", hargaKg: 45700, hargaGln: 82500, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
         { produk: "ABC", kategori: "COPPER", hargaKg: 47300, hargaGln: 82500, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
-		{ produk: "ABC", kategori: "GOLD", hargaKg: 72500, hargaGln: 126000, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
-		
+        { produk: "ABC", kategori: "GOLD", hargaKg: 72500, hargaGln: 126000, hargaPl: 0, disc: 10.0, placeholderKg: "0,4L", placeholderGln: "0,8L", placeholderPl: "PL" },
+
         { produk: "TAMITEX CT", kategori: "TAMITEX CT", hargaKg: 31800, hargaGln: 129700, hargaPl: 595900, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
         { produk: "TAMITEX WF", kategori: "TAMITEX WF", hargaKg: 21700, hargaGln: 68700, hargaPl: 352000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
@@ -603,50 +943,58 @@
 
         { produk: "VINOTEX CT", kategori: "STD & VIP", hargaKg: 24700, hargaGln: 90400, hargaPl: 371400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
         { produk: "VINOTEX CT", kategori: "SPC", hargaKg: 34500, hargaGln: 109300, hargaPl: 463000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "VINOTEX WF", kategori: "VINOTEX WF", hargaKg: 19200, hargaGln: 57200, hargaPl: 268200, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
         { produk: "APOLLO", kategori: "APOLLO", hargaKg: 0, hargaGln: 66900, hargaPl: 259400, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
 
         { produk: "SPECTRUM GRANITE", kategori: "SPECTRUM GRANITE", hargaKg: 0, hargaGln: 484100, hargaPl: 2274500, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
-		
+
         { produk: "SPECTRUM FLOORKOTE", kategori: "SPECTRUM FLOORKOTE", hargaKg: 82500, hargaGln: 275000, hargaPl: 1243000, disc: 10.0, placeholderKg: "KG", placeholderGln: "GLN", placeholderPl: "PL" },
     ];
-    
+
     function formatRupiah(number) {
-        if (number === 0 || isNaN(number)) return '-'; 
+        if (number === 0 || isNaN(number)) return '-';
         return Math.round(number).toLocaleString('id-ID', { minimumFractionDigits: 0 });
     }
-    
+
+    /* ================= BUILD PRODUCT LIST ================= */
     function createTableRows(data) {
         let html = '';
         let lastProduct = '';
+        let groupCount = 0;
 
         data.forEach((item, index) => {
             const cssClassName = item.produk.replace(/\s/g, '-').replace(/\//g, '-').toUpperCase();
-            
-            if (item.produk && item.produk !== lastProduct) {
-                lastProduct = item.produk;
-                html += `<tr class="product-group-header collapsed" data-group="${cssClassName}">`;
-                html += `<td colspan="6" class="group-label text-left">${item.produk}</td>`; 
-                html += `</tr>`;
-            }
-            
-            let rowHtml = `<tr class="product-row ${cssClassName}-row" data-index="${index}" data-group="${cssClassName}">`; 
-            rowHtml += `<td class="text-left row-category">${item.kategori}</td>`; 
-            rowHtml += `<td><input type="number" min="0" max="100" value="${item.disc}" class="disc-input" step="0.5"></td>`;
-            
-            const disabledKg = item.hargaKg > 0 ? '' : 'disabled';
-            const disabledGln = item.hargaGln > 0 ? '' : 'disabled';
-            const disabledPl = item.hargaPl > 0 ? '' : 'disabled';
 
-            rowHtml += `<td><input type="number" min="0" value="" placeholder="${item.placeholderKg}" ${disabledKg} class="order-input kg-qty" data-price="${item.hargaKg}"></td>`;
-            rowHtml += `<td><input type="number" min="0" value="" placeholder="${item.placeholderGln}" ${disabledGln} class="order-input gln-qty" data-price="${item.hargaGln}"></td>`;
-            rowHtml += `<td><input type="number" min="0" value="" placeholder="${item.placeholderPl}" ${disabledPl} class="order-input pl-qty" data-price="${item.hargaPl}"></td>`;
-            rowHtml += `<td class="total-row text-right" data-total="0">-</td>`;
-            rowHtml += `</tr>`;
+            if (item.produk && item.produk !== lastProduct) {
+                if (lastProduct !== '') html += `</div></div>`;
+                lastProduct = item.produk;
+                groupCount = data.filter(d => d.produk === item.produk).length;
+                html += `<div class="product-group">`;
+                html += `<div class="product-group-header collapsed" data-group="${cssClassName}">`;
+                html += `<span>${item.produk}</span>`;
+                html += `<span class="group-badge">${groupCount} varian</span>`;
+                html += `<span class="chevron">&#9660;</span>`;
+                html += `</div>`;
+                html += `<div class="group-rows">`;
+            }
+
+            let rowHtml = `<div class="product-row ${cssClassName}-row" data-index="${index}" data-group="${cssClassName}">`;
+            rowHtml += `<span class="row-category">${item.kategori}</span>`;
+            rowHtml += `<div class="row-inputs">`;
+            rowHtml += `<div class="disc-field"><span class="disc-label">Disc</span><input type="number" min="0" max="100" value="${item.disc}" class="disc-input" step="0.5"><span class="disc-suffix">%</span></div>`;
+            rowHtml += `<div class="qty-group">`;
+            rowHtml += `<div class="qty-slot">${item.hargaKg > 0 ? `<input type="number" min="0" value="" placeholder="${item.placeholderKg}" class="order-input kg-qty" data-price="${item.hargaKg}">` : ''}</div>`;
+            rowHtml += `<div class="qty-slot">${item.hargaGln > 0 ? `<input type="number" min="0" value="" placeholder="${item.placeholderGln}" class="order-input gln-qty" data-price="${item.hargaGln}">` : ''}</div>`;
+            rowHtml += `<div class="qty-slot">${item.hargaPl > 0 ? `<input type="number" min="0" value="" placeholder="${item.placeholderPl}" class="order-input pl-qty" data-price="${item.hargaPl}">` : ''}</div>`;
+            rowHtml += `</div>`;
+            rowHtml += `</div>`;
+            rowHtml += `<span class="total-row row-total" data-total="0">-</span>`;
+            rowHtml += `</div>`;
             html += rowHtml;
         });
+        if (lastProduct !== '') html += `</div></div>`;
 
         document.getElementById('product-list').innerHTML = html;
 
@@ -659,15 +1007,18 @@
         attachEventListeners();
     }
 
+    /* ================= COLLAPSE / EXPAND GROUP ================= */
     function toggleGroup(header) {
         const groupName = header.dataset.group;
         const isCollapsed = header.classList.toggle('collapsed');
-        
+
         document.querySelectorAll(`.product-row[data-group="${groupName}"]`).forEach(row => {
-            if(isCollapsed){
-            const hasValue=[...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i=>(parseFloat(i.value)||0)>0);
-            row.style.display=hasValue?'':'none';
-        }else{row.style.display='';}
+            if (isCollapsed) {
+                const hasValue = [...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i => (parseFloat(i.value) || 0) > 0);
+                row.style.display = hasValue ? '' : 'none';
+            } else {
+                row.style.display = '';
+            }
         });
     }
 
@@ -678,37 +1029,35 @@
     }
 
     function applyRowFilter(row, total) {
-        const filterActive = false;
-        if (filterActive && total === 0) {
-            row.style.display = 'none';
-        } else {
-            const header=document.querySelector(`.product-group-header[data-group="${row.dataset.group}"]`);
-            const hasValue=[...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i=>(parseFloat(i.value)||0)>0); row.style.display = header && header.classList.contains('collapsed') ? (hasValue?'':'none') : '';
-        }
+        const header = document.querySelector(`.product-group-header[data-group="${row.dataset.group}"]`);
+        const hasValue = [...row.querySelectorAll('.kg-qty,.gln-qty,.pl-qty')].some(i => (parseFloat(i.value) || 0) > 0);
+        row.style.display = header && header.classList.contains('collapsed') ? (hasValue ? '' : 'none') : '';
     }
 
+    /* ================= CALCULATIONS ================= */
     function calculateRow(row) {
-        const inputKg   = row.querySelector('.kg-qty');
-        const inputGln  = row.querySelector('.gln-qty');
-        const inputPl   = row.querySelector('.pl-qty');
-        const inputDisc = row.querySelector('.disc-input'); 
+        const inputKg = row.querySelector('.kg-qty');
+        const inputGln = row.querySelector('.gln-qty');
+        const inputPl = row.querySelector('.pl-qty');
+        const inputDisc = row.querySelector('.disc-input');
 
-        if (!inputKg) return; 
+        if (!inputDisc) return;
 
-        const hargaKg = parseFloat(inputKg.dataset.price)  || 0;
-        const qtyKg   = parseFloat(inputKg.value)   || 0; 
-        const hargaGln = parseFloat(inputGln.dataset.price) || 0;
-        const qtyGln   = parseFloat(inputGln.value)  || 0;
-        const hargaPl  = parseFloat(inputPl.dataset.price)  || 0;
-        const qtyPl    = parseFloat(inputPl.value)   || 0;
-        const discPercent = parseFloat(inputDisc.value) || 0; 
-        
+        const hargaKg = inputKg ? (parseFloat(inputKg.dataset.price) || 0) : 0;
+        const qtyKg = inputKg ? (parseFloat(inputKg.value) || 0) : 0;
+        const hargaGln = inputGln ? (parseFloat(inputGln.dataset.price) || 0) : 0;
+        const qtyGln = inputGln ? (parseFloat(inputGln.value) || 0) : 0;
+        const hargaPl = inputPl ? (parseFloat(inputPl.dataset.price) || 0) : 0;
+        const qtyPl = inputPl ? (parseFloat(inputPl.value) || 0) : 0;
+        const discPercent = parseFloat(inputDisc.value) || 0;
+
         let total = ((hargaKg * qtyKg) + (hargaGln * qtyGln) + (hargaPl * qtyPl)) * (1 - (discPercent / 100));
-        total = Math.round(total); 
+        total = Math.round(total);
 
         const totalDisplayElement = row.querySelector('.total-row');
-        totalDisplayElement.dataset.total = total; 
+        totalDisplayElement.dataset.total = total;
         totalDisplayElement.textContent = formatRupiah(total);
+        totalDisplayElement.classList.toggle('has-value', total > 0);
 
         applyRowFilter(row, total);
         calculateGrandTotal();
@@ -717,8 +1066,8 @@
     function calculateGrandTotal() {
         let grandTotal = 0;
         const totalElements = document.querySelectorAll('.total-row');
-        const reviewBtn = document.getElementById('review-btn-trigger'); 
-        
+        const reviewBtn = document.getElementById('review-btn-trigger');
+
         totalElements.forEach(element => {
             grandTotal += parseFloat(element.dataset.total) || 0;
         });
@@ -727,63 +1076,61 @@
         reviewBtn.disabled = grandTotal === 0;
     }
 
-    function toggleFilter() {
-        const filterActive = false;
-        
-        document.querySelectorAll('.product-row').forEach(row => {
-            const total = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
-            if (filterActive && total===0){row.style.display='none';} else { const header=document.querySelector(`.product-group-header[data-group="${row.dataset.group}"]`); row.style.display=(header&&header.classList.contains('collapsed'))?'none':''; }
-        });
-
-        document.querySelectorAll('.product-group-header').forEach(header => {
-            const groupName = header.dataset.group;
-            const hasVisibleItem = Array.from(document.querySelectorAll(`.product-row[data-group="${groupName}"]`))
-                .some(row => row.style.display !== 'none');
-            header.style.display = (filterActive && !hasVisibleItem) ? 'none' : '';
-        });
-        
-        calculateGrandTotal(); 
+    /* ================= HELPER ================= */
+    function getInputVal(row, selector) {
+        const el = row.querySelector(selector);
+        return el ? el.value : '';
     }
-    
+
+    /* ================= SHEET (Menu) ================= */
+    function openSheet(id) {
+        document.getElementById(id).classList.add('open');
+    }
+    function closeSheet(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+
+    /* ================= REVIEW PAGE ================= */
     function showReviewPage() {
         const namaToko = document.getElementById('nama-toko').value.trim() || "-";
         const salesman = document.getElementById('salesman').value.trim() || "-";
 
         document.getElementById('review-toko').textContent = namaToko;
         document.getElementById('review-salesman').textContent = salesman;
-        const d=new Date(); const m=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']; document.getElementById('review-date').textContent=`${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+        const d = new Date();
+        const m = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        document.getElementById('review-date').textContent = `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
 
         const tbody = document.getElementById('review-table-body');
         tbody.innerHTML = '';
-        
+
         const rows = document.querySelectorAll('.product-row');
 
         rows.forEach(row => {
             const originalTotal = parseFloat(row.querySelector('.total-row').dataset.total) || 0;
-            
+
             if (originalTotal > 0) {
                 const dataIndex = row.dataset.index;
                 const productObj = productData[dataIndex];
-                
+
                 const discVal = row.querySelector('.disc-input').value;
-                const kgVal  = row.querySelector('.kg-qty').value.trim();
-                const glnVal = row.querySelector('.gln-qty').value.trim();
-                const plVal  = row.querySelector('.pl-qty').value.trim();
-                
+                const kgVal = getInputVal(row, '.kg-qty').trim();
+                const glnVal = getInputVal(row, '.gln-qty').trim();
+                const plVal = getInputVal(row, '.pl-qty').trim();
+
                 let qtyParts = [];
-                if (kgVal)  qtyParts.push(`${kgVal} (${productObj.placeholderKg})`);
+                if (kgVal) qtyParts.push(`${kgVal} (${productObj.placeholderKg})`);
                 if (glnVal) qtyParts.push(`${glnVal} (${productObj.placeholderGln})`);
-                if (plVal)  qtyParts.push(`${plVal} (${productObj.placeholderPl})`);
-                
+                if (plVal) qtyParts.push(`${plVal} (${productObj.placeholderPl})`);
+
                 const qtyDisplay = qtyParts.join(' , ').trim();
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="rev-col-product-group">${productObj.produk}</td>
-                    <td class="rev-col-product-cat">${productObj.kategori}</td>
+                    <td class="rev-col-product"><span class="prod-name">${productObj.produk}</span> <span class="prod-cat">· ${productObj.kategori}</span></td>
                     <td class="rev-col-disc">${discVal.replace('.', ',')}%</td>
                     <td class="rev-col-qty">${qtyDisplay || ''}</td>
-                    <td class="rev-col-disc disc-extra"><input type="number" min="0" max="100" value="0" step="0.5" class="review-additional-disc" style="width:60px; text-align:center; font-size:11px;"></td>
+                    <td class="rev-col-disc disc-extra disc-extra-cell"><input type="number" min="0" max="100" value="0" step="0.5" class="review-additional-disc"></td>
                     <td class="rev-col-total" data-original="${originalTotal}">${formatRupiah(originalTotal)}</td>
                 `;
                 tbody.appendChild(tr);
@@ -798,7 +1145,9 @@
         updateGrandTotal();
 
         document.getElementById('main-form').style.display = 'none';
+        document.querySelector('.bottom-bar').style.display = 'none';
         document.getElementById('review-page').style.display = 'block';
+        window.scrollTo(0, 0);
 
         const catatanArea = document.getElementById('catatan-so');
         catatanArea.style.height = 'auto';
@@ -808,10 +1157,10 @@
     function updateRowTotal(tr) {
         const originalTotal = parseFloat(tr.querySelector('.rev-col-total').dataset.original) || 0;
         const addDiscPercent = parseFloat(tr.querySelector('.review-additional-disc').value) || 0;
-        
+
         let newTotal = originalTotal * (1 - addDiscPercent / 100);
         newTotal = Math.round(newTotal);
-        
+
         tr.querySelector('.rev-col-total').textContent = formatRupiah(newTotal);
         updateGrandTotal();
     }
@@ -828,24 +1177,26 @@
     function hideReviewPage() {
         document.getElementById('review-page').style.display = 'none';
         document.getElementById('main-form').style.display = 'block';
+        document.querySelector('.bottom-bar').style.display = '';
+        window.scrollTo(0, 0);
     }
 
     async function saveReviewAsJpg() {
         const captureElement = document.getElementById('capture-area');
-        const namaToko = document.getElementById('nama-toko').value.trim() || "SO"; 
+        const namaToko = document.getElementById('nama-toko').value.trim() || "SO";
         const catatanArea = document.getElementById('catatan-so');
-        
+
         const parent = catatanArea.parentNode;
         const originalValue = catatanArea.value;
 
         const textReplacement = document.createElement('div');
         textReplacement.style.width = '100%';
-        textReplacement.style.fontSize = '12px';
+        textReplacement.style.fontSize = '12.5px';
         textReplacement.style.fontFamily = 'inherit';
-        textReplacement.style.color = 'black';
+        textReplacement.style.color = '#111';
         textReplacement.style.whiteSpace = 'pre-wrap';
         textReplacement.style.wordWrap = 'break-word';
-        textReplacement.style.paddingTop = '5px';
+        textReplacement.style.paddingTop = '2px';
         textReplacement.innerText = originalValue || "-";
 
         catatanArea.style.display = 'none';
@@ -853,7 +1204,7 @@
 
         try {
             const canvas = await html2canvas(captureElement, {
-                scale: 2, 
+                scale: 2,
                 backgroundColor: '#ffffff',
                 useCORS: true,
                 width: captureElement.scrollWidth,
@@ -861,11 +1212,11 @@
             });
 
             const imageURL = canvas.toDataURL('image/jpeg', 0.95);
-            
+
             const downloadLink = document.createElement('a');
             downloadLink.href = imageURL;
             downloadLink.download = `SO_${namaToko.replace(/\s/g, '_').toUpperCase()}_${new Date().toISOString().slice(0, 10)}.jpg`;
-            
+
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
@@ -879,6 +1230,7 @@
         }
     }
 
+    /* ================= EXPORT / IMPORT / RESET ================= */
     function exportData() {
         const data = {
             namaToko: document.getElementById('nama-toko').value,
@@ -892,9 +1244,9 @@
             data.items.push({
                 index: index,
                 disc: row.querySelector('.disc-input').value,
-                kg: row.querySelector('.kg-qty').value,
-                gln: row.querySelector('.gln-qty').value,
-                pl: row.querySelector('.pl-qty').value
+                kg: getInputVal(row, '.kg-qty'),
+                gln: getInputVal(row, '.gln-qty'),
+                pl: getInputVal(row, '.pl-qty')
             });
         });
 
@@ -902,9 +1254,10 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `SO_${(data.namaToko || 'Data').replace(/\s+/g, '_').toUpperCase()}_${new Date().toISOString().slice(0,10)}.json`;
+        a.download = `SO_${(data.namaToko || 'Data').replace(/\s+/g, '_').toUpperCase()}_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
+        closeSheet('sheet-menu');
     }
 
     function importData() {
@@ -925,55 +1278,127 @@
                     imported.items.forEach(item => {
                         const row = document.querySelector(`.product-row[data-index="${item.index}"]`);
                         if (row) {
+                            const kgEl = row.querySelector('.kg-qty');
+                            const glnEl = row.querySelector('.gln-qty');
+                            const plEl = row.querySelector('.pl-qty');
                             if (item.disc !== undefined) row.querySelector('.disc-input').value = item.disc;
-                            if (item.kg !== undefined) row.querySelector('.kg-qty').value = item.kg;
-                            if (item.gln !== undefined) row.querySelector('.gln-qty').value = item.gln;
-                            if (item.pl !== undefined) row.querySelector('.pl-qty').value = item.pl;
+                            if (item.kg !== undefined && kgEl) kgEl.value = item.kg;
+                            if (item.gln !== undefined && glnEl) glnEl.value = item.gln;
+                            if (item.pl !== undefined && plEl) plEl.value = item.pl;
                             calculateRow(row);
                         }
                     });
-                    alert('✅ Data berhasil diimport!');
+                    alert('Data berhasil diimport.');
                 } catch (err) {
-                    alert('❌ File JSON tidak valid.');
+                    alert('File JSON tidak valid.');
                 }
             };
             reader.readAsText(file);
         };
         input.click();
+        closeSheet('sheet-menu');
     }
 
+    function resetAllInputs() {
+        if (!confirm('Hapus semua input produk, nama toko, dan salesman? Tindakan ini tidak bisa dibatalkan.')) return;
+        document.getElementById('nama-toko').value = '';
+        document.getElementById('salesman').value = '';
+        document.getElementById('catatan-so').value = '';
+
+        document.querySelectorAll('.product-row').forEach(row => {
+            const orig = productData[row.dataset.index];
+            row.querySelector('.disc-input').value = orig.disc;
+            const kgEl = row.querySelector('.kg-qty');
+            const glnEl = row.querySelector('.gln-qty');
+            const plEl = row.querySelector('.pl-qty');
+            if (kgEl) kgEl.value = '';
+            if (glnEl) glnEl.value = '';
+            if (plEl) plEl.value = '';
+            calculateRow(row);
+        });
+
+        document.querySelectorAll('.product-group-header').forEach(h => h.classList.add('collapsed'));
+        document.querySelectorAll('.product-row').forEach(row => row.style.display = 'none');
+
+        closeSheet('sheet-menu');
+    }
+
+    /* ================= EVENT WIRING ================= */
     function attachEventListeners() {
         const qtyInputs = document.querySelectorAll('.order-input');
         const discInputs = document.querySelectorAll('.disc-input');
-        
+
         [...qtyInputs, ...discInputs].forEach(input => {
-            input.addEventListener('input', function() {
+            input.addEventListener('input', function () {
                 if (this.classList.contains('disc-input')) {
-                    if (parseFloat(this.value) > 100) this.value = 100; 
-                } 
-                if (parseFloat(this.value) < 0) this.value = 0; 
-                
+                    if (parseFloat(this.value) > 100) this.value = 100;
+                }
+                if (parseFloat(this.value) < 0) this.value = 0;
+
                 calculateRow(this.closest('.product-row'));
             });
             calculateRow(input.closest('.product-row'));
         });
-        
+
         document.getElementById('review-btn-trigger').addEventListener('click', showReviewPage);
         document.getElementById('btn-edit').addEventListener('click', hideReviewPage);
+        document.getElementById('btn-edit-2').addEventListener('click', hideReviewPage);
         document.getElementById('btn-save-jpg').addEventListener('click', saveReviewAsJpg);
         document.getElementById('btn-export').addEventListener('click', exportData);
         document.getElementById('btn-import').addEventListener('click', importData);
+        document.getElementById('btn-reset-all').addEventListener('click', resetAllInputs);
+
+        document.getElementById('btn-open-menu').addEventListener('click', () => openSheet('sheet-menu'));
+        document.getElementById('btn-close-menu').addEventListener('click', () => closeSheet('sheet-menu'));
+
+        document.getElementById('sheet-menu').addEventListener('click', (e) => {
+            if (e.target.id === 'sheet-menu') closeSheet('sheet-menu');
+        });
+
+        document.getElementById('btn-exit-yes').addEventListener('click', attemptCloseTab);
+        document.getElementById('btn-exit-no').addEventListener('click', () => closeSheet('sheet-exit'));
+        document.getElementById('sheet-exit').addEventListener('click', (e) => {
+            if (e.target.id === 'sheet-exit') closeSheet('sheet-exit');
+        });
 
         const catatanArea = document.getElementById('catatan-so');
-        catatanArea.addEventListener('input', function() {
+        catatanArea.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
     }
 
+    /* ================= EXIT CONFIRMATION (guard tombol back) ================= */
+    function setupExitGuard() {
+        // Ganjal 1 entry history supaya tombol back device/browser tertangkap sebagai popstate,
+        // bukan langsung keluar dari halaman.
+        history.pushState({ soGuard: true }, '', location.href);
+
+        window.addEventListener('popstate', function () {
+            // Ganjal lagi supaya tetap "terjebak" di halaman ini sampai user konfirmasi.
+            history.pushState({ soGuard: true }, '', location.href);
+            openSheet('sheet-exit');
+        });
+    }
+
+    function attemptCloseTab() {
+        window.close();
+        // Sebagian browser (terutama di mobile) memblokir penutupan tab lewat script
+        // kalau tab bukan dibuka lewat window.open(). Beri fallback pesan jika gagal.
+        setTimeout(() => {
+            if (!window.closed) {
+                closeSheet('sheet-exit');
+                alert('Tab tidak bisa ditutup otomatis oleh browser. Silakan tutup tab ini secara manual.');
+            }
+        }, 300);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         createTableRows(productData);
+        setupExitGuard();
     });
+
 </script>
 </body>
 </html>
+
