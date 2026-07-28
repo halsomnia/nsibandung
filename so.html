@@ -1369,12 +1369,15 @@
     }
 
     /* ================= EXIT CONFIRMATION (guard tombol back) ================= */
+    let hasExited = false;
+
     function setupExitGuard() {
         // Ganjal 1 entry history supaya tombol back device/browser tertangkap sebagai popstate,
         // bukan langsung keluar dari halaman.
         history.pushState({ soGuard: true }, '', location.href);
 
         window.addEventListener('popstate', function () {
+            if (hasExited) return; // user sudah konfirmasi keluar, tidak perlu diganjal lagi
             // Ganjal lagi supaya tetap "terjebak" di halaman ini sampai user konfirmasi.
             history.pushState({ soGuard: true }, '', location.href);
             openSheet('sheet-exit');
@@ -1382,15 +1385,12 @@
     }
 
     function attemptCloseTab() {
+        // Perilaku standar seperti web pada umumnya: cukup panggil window.close().
+        // Browser yang mengizinkan (misal window dibuka via window.open()) akan menutupnya;
+        // kalau tidak diizinkan, browser akan mengabaikannya begitu saja tanpa paksaan apa pun.
+        hasExited = true;
+        closeSheet('sheet-exit');
         window.close();
-        // Sebagian browser (terutama di mobile) memblokir penutupan tab lewat script
-        // kalau tab bukan dibuka lewat window.open(). Beri fallback pesan jika gagal.
-        setTimeout(() => {
-            if (!window.closed) {
-                closeSheet('sheet-exit');
-                alert('Tab tidak bisa ditutup otomatis oleh browser. Silakan tutup tab ini secara manual.');
-            }
-        }, 300);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
